@@ -3,34 +3,37 @@ const router = express.Router();
 const multer = require("multer");
 const path = require("path");
 const auth = require("../middleware/authMiddleware");
-const { uploadMaterial, getMaterials } = require("../controllers/materialController");
+const { uploadMaterial, getMaterials, deleteMaterial } = require("../controllers/materialController");
 
-// Multer storage config
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // files saved in server/uploads/
+    cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
     const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, unique + path.extname(file.originalname));
   },
-  limits: { fileSize: 10 * 1024 * 1024 }
+  // ❌ DO NOT put limits here
 });
 
-// Only allow PDF and PPT
 const fileFilter = (req, file, cb) => {
-  const allowed = [".pdf", ".ppt", ".pptx"];
+  const allowed = [".pdf", ".ppt", ".pptx", ".doc", ".docx"];
   const ext = path.extname(file.originalname).toLowerCase();
   if (allowed.includes(ext)) {
     cb(null, true);
   } else {
-    cb(new Error("Only PDF and PPT files allowed"), false);
+    cb(new Error("Only PDF, PPT, and DOC files are allowed"), false);
   }
 };
 
-const upload = multer({ storage, fileFilter });
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 50 * 1024 * 1024 }, // ✅ limits goes HERE, inside multer()
+});
 
 router.post("/upload", auth, upload.single("file"), uploadMaterial);
 router.get("/:classroomId", auth, getMaterials);
+router.delete("/:materialId", auth, deleteMaterial);
 
 module.exports = router;
