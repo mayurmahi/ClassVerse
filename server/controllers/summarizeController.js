@@ -5,24 +5,22 @@ const fs = require("fs");
 const path = require("path");
 
 // Extract text based on file type
+
 const extractText = async (filePath, fileType) => {
-  const fileBuffer = fs.readFileSync(filePath);
+  try {
+    const fileBuffer = fs.readFileSync(filePath);
 
-  if (fileType === "PDF") {
-    // Use pdf-parse for PDF
-    const pdfParse = require("pdf-parse");
-    const data = await pdfParse(fileBuffer);
-    return data.text;
-  }
-
-  if (fileType === "PPT") {
-    // PPT text extraction — return message
+    if (fileType.toUpperCase() === "PDF") {
+      const pdfParse = require("pdf-parse");
+      const data = await pdfParse(fileBuffer);
+      return data.text;
+    }
+    return null;
+  } catch (err) {
+    console.error("Text extraction error:", err.message);
     return null;
   }
-
-  return null;
 };
-
 // POST /api/summarize — Student requests summary
 const summarizeMaterial = async (req, res) => {
   try {
@@ -63,7 +61,7 @@ const summarizeMaterial = async (req, res) => {
     }
 
     // Only PDF supported right now
-    if (material.fileType !== "PDF") {
+    if (material.fileType.toUpperCase() !== "PDF") {
       return res.status(400).json({
         message: "Summarization is currently supported for PDF files only. PPT and DOC support coming soon.",
       });
@@ -72,7 +70,7 @@ const summarizeMaterial = async (req, res) => {
     // Extract text
     const text = await extractText(filePath, material.fileType);
 
-    if (!text || text.trim().length < 100) {
+    if (!text || text.trim().length ==0) {
       return res.status(400).json({
         message: "Not enough readable text in this file to summarize",
       });
