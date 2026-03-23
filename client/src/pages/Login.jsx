@@ -1,437 +1,57 @@
-// import { useState } from "react";
-// import { useAuth } from "../context/AuthContext";
-// import { useNavigate, Link } from "react-router-dom";
-// import { motion, AnimatePresence } from "framer-motion";
-
-// // ── Reusable animation variants ─────────────────────
-// const fadeUp = (delay = 0) => ({
-//   initial: { opacity: 0, y: 24 },
-//   animate: { opacity: 1, y: 0 },
-//   transition: { delay, duration: 0.55, ease: "easeOut" },
-// });
-
-// const fadeLeft = (delay = 0) => ({
-//   initial: { opacity: 0, x: -24 },
-//   animate: { opacity: 1, x: 0 },
-//   transition: { delay, duration: 0.55, ease: "easeOut" },
-// });
-
-// // ── InputField component ─────────────────────────────
-// const InputField = ({ label, name, type = "text", placeholder, onChange, onFocus, onBlur, focused, rightSlot }) => (
-//   <motion.div {...fadeLeft(name === "email" ? 0.35 : 0.45)}>
-//     <label className="block text-[11px] font-semibold tracking-[0.16em] uppercase text-white/35 mb-2">
-//       {label}
-//     </label>
-//     <div className="relative group">
-//       <input
-//         name={name}
-//         type={type}
-//         placeholder={placeholder}
-//         onChange={onChange}
-//         onFocus={onFocus}
-//         onBlur={onBlur}
-//         required
-//         className={`
-//           w-full bg-white/[0.05] border rounded-xl pl-11 py-3.5 text-white text-sm
-//           placeholder-white/20 outline-none transition-all duration-300
-//           ${rightSlot ? "pr-12" : "pr-4"}
-//           ${focused
-//             ? "border-violet-500/60 bg-violet-500/[0.07] shadow-[0_0_0_3px_rgba(124,58,237,0.12)]"
-//             : "border-white/[0.09] hover:border-white/20"
-//           }
-//         `}
-//       />
-//       {/* Left icon slot — provided via children of wrapper */}
-//       {rightSlot}
-//     </div>
-//   </motion.div>
-// );
-
-// // ── Main component ───────────────────────────────────
-// const Login = () => {
-//   const [form, setForm]                 = useState({ email: "", password: "" });
-//   const [focused, setFocused]           = useState("");
-//   const [loading, setLoading]           = useState(false);
-//   const [showPassword, setShowPassword] = useState(false);
-//   const [error, setError]               = useState("");
-
-//   const { login } = useAuth();
-//   const navigate  = useNavigate();
-
-//   const handleChange  = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     setError("");
-//     try {
-//       await login(form);
-//       const token = localStorage.getItem("token");
-//       const role  = JSON.parse(atob(token.split(".")[1])).role;
-//       if (role === "Admin")        navigate("/admin");
-//       else if (role === "Teacher") navigate("/teacher");
-//       else                         navigate("/student");
-//     } catch {
-//       setError("Invalid credentials. Please try again.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen flex bg-[#07070f] overflow-hidden relative">
-
-//       {/* ── Animated background orbs ── */}
-//       <motion.div
-//         className="pointer-events-none absolute -top-52 -left-52 w-[680px] h-[680px] rounded-full bg-violet-600/20 blur-[130px]"
-//         animate={{ scale: [1, 1.14, 1], opacity: [0.18, 0.28, 0.18] }}
-//         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-//       />
-//       <motion.div
-//         className="pointer-events-none absolute -bottom-44 -right-44 w-[560px] h-[560px] rounded-full bg-cyan-500/15 blur-[130px]"
-//         animate={{ scale: [1, 1.1, 1], opacity: [0.12, 0.22, 0.12] }}
-//         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-//       />
-//       <motion.div
-//         className="pointer-events-none absolute top-1/2 left-1/3 w-[320px] h-[320px] rounded-full bg-indigo-600/10 blur-[100px]"
-//         animate={{ scale: [1, 1.18, 1] }}
-//         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-//       />
-
-//       {/* ── Subtle dot-grid ── */}
-//       <div
-//         className="pointer-events-none absolute inset-0 opacity-[0.04]"
-//         style={{
-//           backgroundImage:
-//             "radial-gradient(circle, white 1px, transparent 1px)",
-//           backgroundSize: "40px 40px",
-//         }}
-//       />
-
-//       {/* ════════════ LEFT PANEL ════════════ */}
-//       <motion.div
-//         className="hidden lg:flex flex-1 flex-col justify-center px-20 relative z-10"
-//         initial={{ opacity: 0, x: -40 }}
-//         animate={{ opacity: 1, x: 0 }}
-//         transition={{ duration: 0.7, ease: "easeOut" }}
-//       >
-//         {/* Live badge */}
-//         <motion.div
-//           className="flex items-center gap-3 w-fit mb-14 px-4 py-2.5 rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-sm"
-//           {...fadeUp(0.2)}
-//         >
-//           <motion.span
-//             className="w-2.5 h-2.5 rounded-full bg-violet-500 shadow-[0_0_8px_#7c3aed]"
-//             animate={{ boxShadow: ["0 0 6px #7c3aed", "0 0 22px #7c3aed", "0 0 6px #7c3aed"] }}
-//             transition={{ duration: 2, repeat: Infinity }}
-//           />
-//           <span className="text-xs font-semibold tracking-[0.15em] uppercase text-white/45">
-//             EduPortal Platform
-//           </span>
-//         </motion.div>
-
-//         {/* Headline */}
-//         <motion.h1
-//           className="text-[64px] xl:text-7xl font-black text-white leading-[1.06] tracking-tight mb-5"
-//           {...fadeUp(0.3)}
-//         >
-//           Learn<br />
-//           <span className="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-//             without limits.
-//           </span>
-//         </motion.h1>
-
-//         <motion.p
-//           className="text-white/35 text-[17px] leading-relaxed max-w-[360px] mb-16"
-//           {...fadeUp(0.45)}
-//         >
-//           A unified platform for students, teachers & admins — all in one powerful dashboard.
-//         </motion.p>
-
-//         {/* Stats */}
-//         <motion.div className="flex gap-14" {...fadeUp(0.55)}>
-//           {[
-//             { num: "12K+", label: "Students"     },
-//             { num: "340+", label: "Teachers"     },
-//             { num: "98%",  label: "Satisfaction" },
-//           ].map(({ num, label }, i) => (
-//             <motion.div
-//               key={label}
-//               initial={{ opacity: 0, y: 16 }}
-//               animate={{ opacity: 1, y: 0 }}
-//               transition={{ delay: 0.6 + i * 0.1, duration: 0.5 }}
-//             >
-//               <p className="text-3xl font-black text-white">{num}</p>
-//               <p className="text-xs text-white/30 mt-1 tracking-widest uppercase">{label}</p>
-//             </motion.div>
-//           ))}
-//         </motion.div>
-
-//         {/* Floating activity card */}
-//         <motion.div
-//           className="absolute bottom-16 left-20 flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-white/[0.06] border border-white/[0.09] backdrop-blur-md"
-//           initial={{ opacity: 0, y: 20 }}
-//           animate={{ opacity: 1, y: 0 }}
-//           transition={{ delay: 0.9, duration: 0.6 }}
-//           whileHover={{ y: -3, scale: 1.02 }}
-//         >
-//           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center text-sm font-black text-white flex-shrink-0">
-//             A
-//           </div>
-//           <div>
-//             <p className="text-white text-sm font-semibold">Arjun just submitted</p>
-//             <p className="text-white/35 text-xs mt-0.5">Physics Assignment · 2m ago</p>
-//           </div>
-//           <motion.span
-//             className="w-2 h-2 rounded-full bg-emerald-400 ml-1 flex-shrink-0"
-//             animate={{ opacity: [1, 0.3, 1] }}
-//             transition={{ duration: 1.6, repeat: Infinity }}
-//           />
-//         </motion.div>
-//       </motion.div>
-
-//       {/* Vertical divider */}
-//       <div className="hidden lg:block w-px bg-gradient-to-b from-transparent via-white/[0.08] to-transparent my-10 relative z-10 flex-shrink-0" />
-
-//       {/* ════════════ RIGHT PANEL ════════════ */}
-//       <div className="flex-1 lg:flex-none lg:w-[500px] flex items-center justify-center px-6 py-12 lg:px-14 relative z-10">
-//         <motion.div
-//           className="w-full max-w-md"
-//           initial={{ opacity: 0, y: 40 }}
-//           animate={{ opacity: 1, y: 0 }}
-//           transition={{ duration: 0.65, ease: "easeOut", delay: 0.1 }}
-//         >
-//           {/* Glass card */}
-//           <div className="relative bg-white/[0.04] border border-white/[0.08] rounded-3xl p-10 backdrop-blur-2xl shadow-[0_32px_80px_rgba(0,0,0,0.7)] overflow-hidden">
-
-//             {/* Inner glow top-left */}
-//             <div className="pointer-events-none absolute -top-20 -left-20 w-48 h-48 rounded-full bg-violet-600/10 blur-3xl" />
-
-//             {/* Header */}
-//             <motion.div {...fadeUp(0.25)}>
-//               <p className="text-violet-400 text-[11px] font-bold tracking-[0.2em] uppercase mb-2">
-//                 Welcome back
-//               </p>
-//               <h2 className="text-white text-[28px] font-black tracking-tight mb-1.5">
-//                 Sign in
-//               </h2>
-//               <p className="text-white/30 text-sm leading-relaxed mb-8">
-//                 Enter your credentials to access your dashboard.
-//               </p>
-//             </motion.div>
-
-//             <form onSubmit={handleSubmit} className="space-y-5">
-
-//               {/* ── Email ── */}
-//               <motion.div {...fadeLeft(0.35)}>
-//                 <label className="block text-[11px] font-semibold tracking-[0.16em] uppercase text-white/35 mb-2">
-//                   Email address
-//                 </label>
-//                 <div className="relative">
-//                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none">
-//                     <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-//                       <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-//                       <polyline points="22,6 12,13 2,6"/>
-//                     </svg>
-//                   </span>
-//                   <input
-//                     name="email"
-//                     type="email"
-//                     placeholder="you@example.com"
-//                     onChange={handleChange}
-//                     onFocus={() => setFocused("email")}
-//                     onBlur={() => setFocused("")}
-//                     required
-//                     className={`w-full bg-white/[0.05] border rounded-xl pl-11 pr-4 py-3.5 text-white text-sm placeholder-white/20 outline-none transition-all duration-300
-//                       ${focused === "email"
-//                         ? "border-violet-500/60 bg-violet-500/[0.07] shadow-[0_0_0_3px_rgba(124,58,237,0.12)]"
-//                         : "border-white/[0.09] hover:border-white/20"}`}
-//                   />
-//                 </div>
-//               </motion.div>
-
-//               {/* ── Password ── */}
-//               <motion.div {...fadeLeft(0.45)}>
-//                 <label className="block text-[11px] font-semibold tracking-[0.16em] uppercase text-white/35 mb-2">
-//                   Password
-//                 </label>
-//                 <div className="relative">
-//                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none">
-//                     <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-//                       <rect x="3" y="11" width="18" height="11" rx="2"/>
-//                       <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-//                     </svg>
-//                   </span>
-//                   <input
-//                     name="password"
-//                     type={showPassword ? "text" : "password"}
-//                     placeholder="••••••••"
-//                     onChange={handleChange}
-//                     onFocus={() => setFocused("password")}
-//                     onBlur={() => setFocused("")}
-//                     required
-//                     className={`w-full bg-white/[0.05] border rounded-xl pl-11 pr-12 py-3.5 text-white text-sm placeholder-white/20 outline-none transition-all duration-300
-//                       ${focused === "password"
-//                         ? "border-violet-500/60 bg-violet-500/[0.07] shadow-[0_0_0_3px_rgba(124,58,237,0.12)]"
-//                         : "border-white/[0.09] hover:border-white/20"}`}
-//                   />
-//                   <motion.button
-//                     type="button"
-//                     onClick={() => setShowPassword(!showPassword)}
-//                     whileTap={{ scale: 0.85 }}
-//                     className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors duration-200"
-//                     tabIndex={-1}
-//                   >
-//                     {showPassword ? (
-//                       <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-//                         <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-//                         <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-//                         <line x1="1" y1="1" x2="23" y2="23"/>
-//                       </svg>
-//                     ) : (
-//                       <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-//                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-//                         <circle cx="12" cy="12" r="3"/>
-//                       </svg>
-//                     )}
-//                   </motion.button>
-//                 </div>
-//                 <div className="flex justify-end mt-2">
-//                   <a href="#" className="text-xs text-white/25 hover:text-violet-400 transition-colors duration-200">
-//                     Forgot password?
-//                   </a>
-//                 </div>
-//               </motion.div>
-
-//               {/* ── Error toast ── */}
-//               <AnimatePresence>
-//                 {error && (
-//                   <motion.div
-//                     initial={{ opacity: 0, y: -8, height: 0 }}
-//                     animate={{ opacity: 1, y: 0, height: "auto" }}
-//                     exit={{ opacity: 0, y: -8, height: 0 }}
-//                     transition={{ duration: 0.3 }}
-//                     className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"
-//                   >
-//                     <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="flex-shrink-0">
-//                       <circle cx="12" cy="12" r="10"/>
-//                       <line x1="12" y1="8" x2="12" y2="12"/>
-//                       <line x1="12" y1="16" x2="12.01" y2="16"/>
-//                     </svg>
-//                     {error}
-//                   </motion.div>
-//                 )}
-//               </AnimatePresence>
-
-//               {/* ── Submit button ── */}
-//               <motion.div {...fadeUp(0.55)}>
-//                 <motion.button
-//                   type="submit"
-//                   disabled={loading}
-//                   whileHover={!loading ? { scale: 1.025, y: -2 } : {}}
-//                   whileTap={!loading ? { scale: 0.97 } : {}}
-//                   className="relative w-full py-4 mt-1 rounded-xl font-bold text-sm tracking-wide text-white overflow-hidden
-//                     bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-600
-//                     shadow-[0_4px_24px_rgba(124,58,237,0.45)]
-//                     hover:shadow-[0_8px_36px_rgba(124,58,237,0.55)]
-//                     disabled:opacity-60 disabled:cursor-not-allowed
-//                     transition-shadow duration-300"
-//                 >
-//                   {/* Shimmer sweep */}
-//                   <motion.div
-//                     className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-//                     animate={{ x: ["-100%", "220%"] }}
-//                     transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1.8, ease: "easeInOut" }}
-//                   />
-//                   <span className="relative flex items-center justify-center gap-2">
-//                     {loading ? (
-//                       <>
-//                         <motion.div
-//                           className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
-//                           animate={{ rotate: 360 }}
-//                           transition={{ duration: 0.7, repeat: Infinity, ease: "linear" }}
-//                         />
-//                         Signing in…
-//                       </>
-//                     ) : (
-//                       <>
-//                         Sign In
-//                         <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-//                           <line x1="5" y1="12" x2="19" y2="12"/>
-//                           <polyline points="12 5 19 12 12 19"/>
-//                         </svg>
-//                       </>
-//                     )}
-//                   </span>
-//                 </motion.button>
-//               </motion.div>
-
-//               {/* Divider */}
-//               <div className="flex items-center gap-3">
-//                 <div className="flex-1 h-px bg-white/[0.07]" />
-//                 <span className="text-[11px] text-white/20 tracking-widest uppercase">or</span>
-//                 <div className="flex-1 h-px bg-white/[0.07]" />
-//               </div>
-
-//               {/* Register link */}
-//               <motion.p
-//                 className="text-center text-sm text-white/30"
-//                 {...fadeUp(0.7)}
-//               >
-//                 Don't have an account?{" "}
-//                 <Link
-//                   to="/register"
-//                   className="text-violet-400 font-semibold hover:text-violet-300 underline underline-offset-2 decoration-violet-500/30 transition-colors duration-200"
-//                 >
-//                   Create one
-//                 </Link>
-//               </motion.p>
-//             </form>
-//           </div>
-
-//           {/* Footer note */}
-//           <motion.p
-//             className="text-center text-xs text-white/15 mt-5"
-//             {...fadeUp(0.9)}
-//           >
-//             Protected by end-to-end encryption 🔒
-//           </motion.p>
-//         </motion.div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Login;
-
-
-
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
-const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 24 },
-  animate: { opacity: 1, y: 0 },
-  transition: { delay, duration: 0.55, ease: "easeOut" },
-});
+// Typewriter hook
+const useTypewriter = (words, speed = 120, pause = 2000) => {
+  const [text, setText] = useState("");
+  const [wordIndex, setWordIndex] = useState(0);
+  const [deleting, setDeleting] = useState(false);
 
-const fadeLeft = (delay = 0) => ({
-  initial: { opacity: 0, x: -24 },
-  animate: { opacity: 1, x: 0 },
-  transition: { delay, duration: 0.55, ease: "easeOut" },
-});
+  useEffect(() => {
+    const word = words[wordIndex % words.length];
+    const timeout = setTimeout(() => {
+      if (!deleting) {
+        if (text.length < word.length) {
+          setText(word.slice(0, text.length + 1));
+        } else {
+          setTimeout(() => setDeleting(true), pause);
+        }
+      } else {
+        if (text.length > 0) {
+          setText(text.slice(0, -1));
+        } else {
+          setDeleting(false);
+          setWordIndex((i) => i + 1);
+        }
+      }
+    }, deleting ? 60 : speed);
+    return () => clearTimeout(timeout);
+  }, [text, deleting, wordIndex, words, speed, pause]);
+
+  return text;
+};
+
+// Floating orb
+const Orb = ({ cx, cy, r, color, delay = 0 }) => (
+  <motion.circle
+    cx={cx} cy={cy} r={r} fill={color}
+    animate={{ cy: [cy, cy - 18, cy], r: [r, r * 1.08, r] }}
+    transition={{ duration: 5 + delay, repeat: Infinity, ease: "easeInOut", delay }}
+  />
+);
 
 const Login = () => {
-  const [form, setForm]                 = useState({ email: "", password: "" });
-  const [focused, setFocused]           = useState("");
-  const [loading, setLoading]           = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError]               = useState("");
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [focused, setFocused] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPw, setShowPw] = useState(false);
+  const [error, setError] = useState("");
 
   const { login } = useAuth();
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
+  const typed = useTypewriter(["Learning.", "Growing.", "Teaching.", "Achieving.", "Connecting."]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -441,358 +61,346 @@ const Login = () => {
     setError("");
     try {
       await login(form);
-      const token = localStorage.getItem("token");
-      const role  = JSON.parse(atob(token.split(".")[1])).role;
-      if (role === "Admin")        navigate("/admin");
-      else if (role === "Teacher") navigate("/teacher");
-      else                         navigate("/student");
-    } catch {
-      setError("Invalid credentials. Please try again.");
+      const user = JSON.parse(atob(localStorage.getItem("token").split(".")[1]));
+      if (user.role === "SuperAdmin") navigate("/superadmin");
+      else if (user.role === "Admin") navigate("/admin");
+      else if (user.role === "Teacher") navigate("/teacher");
+      else navigate("/student");
+    } catch (err) {
+      setError(err.response?.data?.message || "Invalid credentials. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  const inputBase = (field) =>
+    `w-full border-b-2 bg-transparent pt-5 pb-2 px-0 text-[#1a2a3a] text-sm outline-none transition-all duration-300 placeholder-transparent peer ${
+      focused === field ? "border-[#1F4E79]" : "border-[#c8d8e8]"
+    }`;
+
+  const features = [
+    { icon: "📚", title: "Smart Classrooms", desc: "Organize, share, and manage learning resources" },
+    { icon: "🤖", title: "AI Summarization", desc: "Instant summaries of any uploaded material" },
+    { icon: "💬", title: "Live Chat", desc: "Real-time communication inside every classroom" },
+    { icon: "📝", title: "Assignments", desc: "Create, submit, and evaluate with deadlines" },
+  ];
+
   return (
-    <div className="min-h-screen flex bg-[#07070f] overflow-hidden relative">
+    <div className="min-h-screen flex font-sans overflow-hidden" style={{ fontFamily: "'DM Sans', 'Segoe UI', sans-serif" }}>
 
-      {/* ── Animated background orbs — ClassVerse blue theme ── */}
-      <motion.div
-        className="pointer-events-none absolute -top-52 -left-52 w-[680px] h-[680px] rounded-full bg-[#1F4E79]/30 blur-[130px]"
-        animate={{ scale: [1, 1.14, 1], opacity: [0.2, 0.35, 0.2] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="pointer-events-none absolute -bottom-44 -right-44 w-[560px] h-[560px] rounded-full bg-[#2E75B6]/20 blur-[130px]"
-        animate={{ scale: [1, 1.1, 1], opacity: [0.15, 0.28, 0.15] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-      />
-      <motion.div
-        className="pointer-events-none absolute top-1/2 left-1/3 w-[320px] h-[320px] rounded-full bg-blue-400/10 blur-[100px]"
-        animate={{ scale: [1, 1.18, 1] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-      />
+      {/* ── LEFT — Illustrated Panel ─────────────────────────── */}
+      <div className="hidden lg:flex flex-col flex-1 relative bg-gradient-to-br from-[#1F4E79] via-[#1a4470] to-[#0f2d4a] overflow-hidden">
 
-      {/* ── Dot grid ── */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+            backgroundSize: "40px 40px"
+          }}
+        />
 
-      {/* ════════════ LEFT PANEL ════════════ */}
-      <motion.div
-        className="hidden lg:flex flex-1 flex-col justify-center px-20 relative z-10"
-        initial={{ opacity: 0, x: -40 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-      >
-        {/* ClassVerse Logo */}
-        <motion.div className="mb-14" {...fadeUp(0.15)}>
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1F4E79] to-[#2E75B6] flex items-center justify-center shadow-lg shadow-[#1F4E79]/50">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5"/>
-                <path d="M2 12l10 5 10-5"/>
-              </svg>
+        {/* SVG illustration */}
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 700 800" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <radialGradient id="g1" cx="30%" cy="30%">
+              <stop offset="0%" stopColor="#2E75B6" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#1F4E79" stopOpacity="0" />
+            </radialGradient>
+            <radialGradient id="g2" cx="70%" cy="70%">
+              <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#1F4E79" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <rect width="700" height="800" fill="url(#g1)" />
+          <rect width="700" height="800" fill="url(#g2)" />
+
+          {/* Floating orbs */}
+          <Orb cx={120} cy={180} r={80} color="rgba(96,165,250,0.12)" delay={0} />
+          <Orb cx={560} cy={320} r={100} color="rgba(255,255,255,0.06)" delay={1.5} />
+          <Orb cx={300} cy={600} r={140} color="rgba(46,117,182,0.15)" delay={0.8} />
+          <Orb cx={600} cy={680} r={60} color="rgba(96,165,250,0.1)" delay={2} />
+
+          {/* Decorative rings */}
+          <motion.circle cx="350" cy="400" r="200" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1"
+            animate={{ r: [200, 220, 200] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} />
+          <motion.circle cx="350" cy="400" r="150" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1"
+            animate={{ r: [150, 165, 150] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }} />
+
+          {/* Central illustration — classroom */}
+          <g transform="translate(175, 180)">
+            {/* Screen / board */}
+            <motion.rect x="50" y="30" width="250" height="160" rx="12"
+              fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5"
+              animate={{ y: [30, 24, 30] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
+            {/* Screen content lines */}
+            <motion.rect x="70" y="55" width="140" height="6" rx="3" fill="rgba(255,255,255,0.5)"
+              animate={{ width: [140, 120, 140] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} />
+            <rect x="70" y="70" width="100" height="4" rx="2" fill="rgba(255,255,255,0.3)" />
+            <rect x="70" y="82" width="120" height="4" rx="2" fill="rgba(255,255,255,0.3)" />
+            <rect x="70" y="94" width="80" height="4" rx="2" fill="rgba(255,255,255,0.2)" />
+            {/* AI badge */}
+            <motion.rect x="230" y="55" width="52" height="22" rx="11"
+              fill="rgba(96,165,250,0.4)" stroke="rgba(96,165,250,0.6)" strokeWidth="1"
+              animate={{ opacity: [1, 0.6, 1] }} transition={{ duration: 2, repeat: Infinity }} />
+            <text x="256" y="70" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold">AI ✦</text>
+
+            {/* Students */}
+            {[0, 1, 2, 3].map((i) => (
+              <motion.g key={i} transform={`translate(${40 + i * 60}, 230)`}
+                animate={{ y: [0, -6, 0] }} transition={{ duration: 3, repeat: Infinity, delay: i * 0.4, ease: "easeInOut" }}>
+                <circle cx="20" cy="0" r="16" fill={["rgba(255,255,255,0.15)", "rgba(96,165,250,0.2)", "rgba(255,255,255,0.12)", "rgba(46,117,182,0.25)"][i]} stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+                <circle cx="20" cy="-5" r="6" fill="rgba(255,255,255,0.4)" />
+                <path d="M8 10 Q20 18 32 10" fill="rgba(255,255,255,0.25)" />
+              </motion.g>
+            ))}
+
+            {/* Floating chat bubbles */}
+            <motion.g animate={{ y: [0, -8, 0], opacity: [0.8, 1, 0.8] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}>
+              <rect x="260" y="230" width="80" height="28" rx="14" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+              <text x="300" y="248" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="9">Good morning!</text>
+            </motion.g>
+
+            <motion.g animate={{ y: [0, -6, 0], opacity: [0.7, 1, 0.7] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
+              <rect x="-40" y="200" width="70" height="24" rx="12" fill="rgba(96,165,250,0.2)" stroke="rgba(96,165,250,0.3)" strokeWidth="1" />
+              <text x="-5" y="215" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="8">Any questions?</text>
+            </motion.g>
+          </g>
+
+          {/* Stats chips */}
+          <motion.g animate={{ y: [0, -5, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
+            <rect x="50" y="640" width="130" height="44" rx="22" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+            <text x="115" y="657" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="9">Students</text>
+            <text x="115" y="675" textAnchor="middle" fill="white" fontSize="15" fontWeight="bold">12,400+</text>
+          </motion.g>
+          <motion.g animate={{ y: [0, -5, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}>
+            <rect x="210" y="640" width="130" height="44" rx="22" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+            <text x="275" y="657" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="9">Classrooms</text>
+            <text x="275" y="675" textAnchor="middle" fill="white" fontSize="15" fontWeight="bold">3,200+</text>
+          </motion.g>
+          <motion.g animate={{ y: [0, -5, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.4 }}>
+            <rect x="370" y="640" width="130" height="44" rx="22" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+            <text x="435" y="657" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="9">Satisfaction</text>
+            <text x="435" y="675" textAnchor="middle" fill="white" fontSize="15" fontWeight="bold">98%</text>
+          </motion.g>
+        </svg>
+
+        {/* Text content */}
+        <div className="relative z-10 flex flex-col h-full px-14 py-12">
+          {/* Logo */}
+          <motion.div className="flex items-center gap-3" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center border border-white/20">
+              <span className="text-white font-black text-lg">C</span>
             </div>
-            <div>
-              <p className="text-white text-2xl font-black tracking-tight leading-none">
-                Class<span className="text-[#2E75B6]">Verse</span>
-              </p>
-              <p className="text-white/30 text-[11px] tracking-widest uppercase mt-0.5">e-Learning Platform</p>
-            </div>
-          </div>
+            <span className="text-white font-black text-xl tracking-tight">ClassVerse</span>
+          </motion.div>
 
-          {/* Live indicator */}
-          <div className="flex items-center gap-2 w-fit px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-sm">
-            <motion.span
-              className="w-2 h-2 rounded-full bg-emerald-400"
-              animate={{ boxShadow: ["0 0 4px #34d399", "0 0 16px #34d399", "0 0 4px #34d399"] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <span className="text-white/45 text-[11px] font-semibold tracking-widest uppercase">Live Platform</span>
-          </div>
-        </motion.div>
-
-        {/* Headline */}
-        <motion.h1
-          className="text-[58px] xl:text-7xl font-black text-white leading-[1.06] tracking-tight mb-5"
-          {...fadeUp(0.3)}
-        >
-          Learn.<br />
-          Teach.<br />
-          <span className="bg-gradient-to-r from-[#2E75B6] via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-            Grow together.
-          </span>
-        </motion.h1>
-
-        <motion.p
-          className="text-white/35 text-[17px] leading-relaxed max-w-[380px] mb-16"
-          {...fadeUp(0.45)}
-        >
-          ClassVerse brings students, teachers & admins into one powerful, unified learning experience.
-        </motion.p>
-
-        {/* Stats */}
-        <motion.div className="flex gap-14" {...fadeUp(0.55)}>
-          {[
-            { num: "12K+", label: "Students"     },
-            { num: "340+", label: "Teachers"     },
-            { num: "98%",  label: "Satisfaction" },
-          ].map(({ num, label }, i) => (
-            <motion.div
-              key={label}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + i * 0.1, duration: 0.5 }}
-            >
-              <p className="text-3xl font-black text-white">{num}</p>
-              <p className="text-xs text-white/30 mt-1 tracking-widest uppercase">{label}</p>
+          {/* Headline */}
+          <div className="mt-auto mb-20">
+            <motion.p className="text-blue-200 text-sm font-semibold tracking-widest uppercase mb-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+              The Future of Learning
+            </motion.p>
+            <motion.h2 className="text-white text-5xl font-black leading-tight mb-3" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+              Where Every<br />Classroom
+            </motion.h2>
+            <motion.div className="text-5xl font-black leading-tight" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+              <span className="text-blue-300">{typed}</span>
+              <motion.span className="inline-block w-0.5 h-10 bg-blue-300 ml-1 align-middle" animate={{ opacity: [1, 0] }} transition={{ duration: 0.8, repeat: Infinity }} />
             </motion.div>
-          ))}
-        </motion.div>
 
-        {/* Floating activity card */}
-        <motion.div
-          className="absolute bottom-16 left-20 flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-white/[0.06] border border-white/[0.09] backdrop-blur-md"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.6 }}
-          whileHover={{ y: -3, scale: 1.02 }}
-        >
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#1F4E79] to-[#2E75B6] flex items-center justify-center text-sm font-black text-white flex-shrink-0">
-            A
+            {/* Features */}
+            <motion.div className="grid grid-cols-2 gap-3 mt-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
+              {features.map((f, i) => (
+                <motion.div key={f.title}
+                  className="flex items-start gap-3 bg-white/[0.07] border border-white/[0.1] rounded-2xl px-4 py-3.5 backdrop-blur-sm"
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 + i * 0.1 }}
+                  whileHover={{ backgroundColor: "rgba(255,255,255,0.12)", y: -2 }}>
+                  <span className="text-xl">{f.icon}</span>
+                  <div>
+                    <p className="text-white text-xs font-bold">{f.title}</p>
+                    <p className="text-white/40 text-[11px] mt-0.5 leading-snug">{f.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
-          <div>
-            <p className="text-white text-sm font-semibold">Arjun just submitted</p>
-            <p className="text-white/35 text-xs mt-0.5">Physics Assignment · 2m ago</p>
-          </div>
-          <motion.span
-            className="w-2 h-2 rounded-full bg-emerald-400 ml-1 flex-shrink-0"
-            animate={{ opacity: [1, 0.3, 1] }}
-            transition={{ duration: 1.6, repeat: Infinity }}
-          />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
-      {/* Vertical divider */}
-      <div className="hidden lg:block w-px bg-gradient-to-b from-transparent via-white/[0.08] to-transparent my-10 relative z-10 flex-shrink-0" />
+      {/* ── RIGHT — Login Form ────────────────────────────────── */}
+      <div className="flex-1 lg:flex-none lg:w-[480px] flex items-center justify-center bg-[#f8fafc] px-8 py-12 relative">
 
-      {/* ════════════ RIGHT PANEL ════════════ */}
-      <div className="flex-1 lg:flex-none lg:w-[500px] flex items-center justify-center px-6 py-12 lg:px-14 relative z-10">
-        <motion.div
-          className="w-full max-w-md"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, ease: "easeOut", delay: 0.1 }}
-        >
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: "radial-gradient(circle, #1F4E79 1px, transparent 1px)",
+            backgroundSize: "28px 28px"
+          }}
+        />
+
+        <motion.div className="w-full max-w-sm relative z-10"
+          initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}>
+
           {/* Mobile logo */}
-          <div className="flex lg:hidden items-center gap-2.5 mb-8 justify-center">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#1F4E79] to-[#2E75B6] flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5"/>
-                <path d="M2 12l10 5 10-5"/>
-              </svg>
+          <div className="flex lg:hidden items-center gap-2 mb-8">
+            <div className="w-9 h-9 rounded-xl bg-[#1F4E79] flex items-center justify-center">
+              <span className="text-white font-black">C</span>
             </div>
-            <span className="text-white text-xl font-black tracking-tight">
-              Class<span className="text-[#2E75B6]">Verse</span>
-            </span>
+            <span className="text-[#1F4E79] font-black text-xl">ClassVerse</span>
           </div>
 
-          {/* Glass card */}
-          <div className="relative bg-white/[0.04] border border-white/[0.08] rounded-3xl p-10 backdrop-blur-2xl shadow-[0_32px_80px_rgba(0,0,0,0.7)] overflow-hidden">
+          {/* Header */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <h1 className="text-[#0f2d4a] text-3xl font-black tracking-tight mb-1">
+              Welcome back
+            </h1>
+            <p className="text-[#5a7a96] text-sm">
+              Sign in to access your ClassVerse dashboard
+            </p>
+          </motion.div>
 
-            {/* Inner glows */}
-            <div className="pointer-events-none absolute -top-20 -left-20 w-48 h-48 rounded-full bg-[#1F4E79]/20 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-16 -right-16 w-36 h-36 rounded-full bg-[#2E75B6]/15 blur-2xl" />
+          {/* Divider line */}
+          <motion.div className="h-px bg-gradient-to-r from-[#1F4E79] via-[#2E75B6] to-transparent my-8"
+            initial={{ scaleX: 0, originX: 0 }} animate={{ scaleX: 1 }}
+            transition={{ delay: 0.4, duration: 0.6 }} />
 
-            {/* Header */}
-            <motion.div {...fadeUp(0.25)}>
-              <p className="text-[#2E75B6] text-[11px] font-bold tracking-[0.2em] uppercase mb-2">
-                Welcome back
-              </p>
-              <h2 className="text-white text-[28px] font-black tracking-tight mb-1.5">
-                Sign in to ClassVerse
-              </h2>
-              <p className="text-white/30 text-sm leading-relaxed mb-8">
-                Enter your credentials to access your dashboard.
-              </p>
+          <form onSubmit={handleSubmit} className="space-y-6">
+
+            {/* Email field */}
+            <motion.div className="relative" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
+              <input
+                name="email"
+                type="email"
+                placeholder="Email address"
+                onChange={handleChange}
+                onFocus={() => setFocused("email")}
+                onBlur={() => setFocused("")}
+                required
+                className="w-full bg-white border-2 rounded-xl px-4 py-3.5 text-[#1a2a3a] text-sm outline-none transition-all duration-300 placeholder-[#a0b4c4] shadow-sm"
+                style={{ borderColor: focused === "email" ? "#1F4E79" : "#dce8f0" }}
+              />
+              <motion.div
+                className="absolute bottom-0 left-0 h-0.5 bg-[#1F4E79] rounded-full"
+                animate={{ width: focused === "email" ? "100%" : "0%" }}
+                transition={{ duration: 0.3 }}
+              />
             </motion.div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-
-              {/* ── Email ── */}
-              <motion.div {...fadeLeft(0.35)}>
-                <label className="block text-[11px] font-semibold tracking-[0.16em] uppercase text-white/35 mb-2">
-                  Email address
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none">
-                    <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                      <polyline points="22,6 12,13 2,6"/>
-                    </svg>
-                  </span>
-                  <input
-                    name="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    onChange={handleChange}
-                    onFocus={() => setFocused("email")}
-                    onBlur={() => setFocused("")}
-                    required
-                    className={`w-full bg-white/[0.05] border rounded-xl pl-11 pr-4 py-3.5 text-white text-sm placeholder-white/20 outline-none transition-all duration-300
-                      ${focused === "email"
-                        ? "border-[#2E75B6]/70 bg-[#1F4E79]/10 shadow-[0_0_0_3px_rgba(46,117,182,0.18)]"
-                        : "border-white/[0.09] hover:border-white/20"}`}
-                  />
-                </div>
-              </motion.div>
-
-              {/* ── Password ── */}
-              <motion.div {...fadeLeft(0.45)}>
-                <label className="block text-[11px] font-semibold tracking-[0.16em] uppercase text-white/35 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none">
-                    <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <rect x="3" y="11" width="18" height="11" rx="2"/>
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                  </span>
-                  <input
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    onChange={handleChange}
-                    onFocus={() => setFocused("password")}
-                    onBlur={() => setFocused("")}
-                    required
-                    className={`w-full bg-white/[0.05] border rounded-xl pl-11 pr-12 py-3.5 text-white text-sm placeholder-white/20 outline-none transition-all duration-300
-                      ${focused === "password"
-                        ? "border-[#2E75B6]/70 bg-[#1F4E79]/10 shadow-[0_0_0_3px_rgba(46,117,182,0.18)]"
-                        : "border-white/[0.09] hover:border-white/20"}`}
-                  />
-                  <motion.button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    whileTap={{ scale: 0.85 }}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors duration-200"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? (
-                      <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-                        <line x1="1" y1="1" x2="23" y2="23"/>
-                      </svg>
-                    ) : (
-                      <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                      </svg>
-                    )}
-                  </motion.button>
-                </div>
-                <div className="flex justify-end mt-2">
-                  <a href="#" className="text-xs text-white/25 hover:text-[#2E75B6] transition-colors duration-200">
-                    Forgot password?
-                  </a>
-                </div>
-              </motion.div>
-
-              {/* ── Error toast ── */}
-              <AnimatePresence>
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: "auto" }}
-                    exit={{ opacity: 0, y: -8, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"
-                  >
-                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="flex-shrink-0">
-                      <circle cx="12" cy="12" r="10"/>
-                      <line x1="12" y1="8" x2="12" y2="12"/>
-                      <line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
-                    {error}
-                  </motion.div>
+            {/* Password field */}
+            <motion.div className="relative" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
+              <input
+                name="password"
+                type={showPw ? "text" : "password"}
+                placeholder="Password"
+                onChange={handleChange}
+                onFocus={() => setFocused("password")}
+                onBlur={() => setFocused("")}
+                required
+                className="w-full bg-white border-2 rounded-xl px-4 py-3.5 pr-12 text-[#1a2a3a] text-sm outline-none transition-all duration-300 placeholder-[#a0b4c4] shadow-sm"
+                style={{ borderColor: focused === "password" ? "#1F4E79" : "#dce8f0" }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw(!showPw)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#a0b4c4] hover:text-[#1F4E79] transition-colors"
+                tabIndex={-1}
+              >
+                {showPw ? (
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
                 )}
-              </AnimatePresence>
+              </button>
+              <motion.div
+                className="absolute bottom-0 left-0 h-0.5 bg-[#1F4E79] rounded-full"
+                animate={{ width: focused === "password" ? "100%" : "0%" }}
+                transition={{ duration: 0.3 }}
+              />
+            </motion.div>
 
-              {/* ── Submit button ── */}
-              <motion.div {...fadeUp(0.55)}>
-                <motion.button
-                  type="submit"
-                  disabled={loading}
-                  whileHover={!loading ? { scale: 1.025, y: -2 } : {}}
-                  whileTap={!loading ? { scale: 0.97 } : {}}
-                  className="relative w-full py-4 mt-1 rounded-xl font-bold text-sm tracking-wide text-white overflow-hidden
-                    bg-gradient-to-r from-[#1F4E79] via-[#2E75B6] to-blue-400
-                    shadow-[0_4px_24px_rgba(31,78,121,0.55)]
-                    hover:shadow-[0_8px_36px_rgba(31,78,121,0.7)]
-                    disabled:opacity-60 disabled:cursor-not-allowed
-                    transition-shadow duration-300"
+            {/* Error */}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6, height: 0 }}
+                  animate={{ opacity: 1, y: 0, height: "auto" }}
+                  exit={{ opacity: 0, y: -6, height: 0 }}
+                  className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm"
                 >
-                  {/* Shimmer sweep */}
-                  <motion.div
-                    className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                    animate={{ x: ["-100%", "220%"] }}
-                    transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1.8, ease: "easeInOut" }}
-                  />
-                  <span className="relative flex items-center justify-center gap-2">
-                    {loading ? (
-                      <>
-                        <motion.div
-                          className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 0.7, repeat: Infinity, ease: "linear" }}
-                        />
-                        Signing in…
-                      </>
-                    ) : (
-                      <>
-                        Sign In to ClassVerse
-                        <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                          <line x1="5" y1="12" x2="19" y2="12"/>
-                          <polyline points="12 5 19 12 12 19"/>
-                        </svg>
-                      </>
-                    )}
-                  </span>
-                </motion.button>
-              </motion.div>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="flex-shrink-0">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-              {/* Divider */}
-              <div className="flex items-center gap-3">
-                <div className="flex-1 h-px bg-white/[0.07]" />
-                <span className="text-[11px] text-white/20 tracking-widest uppercase">or</span>
-                <div className="flex-1 h-px bg-white/[0.07]" />
-              </div>
+            {/* Submit */}
+            <motion.button
+              type="submit"
+              disabled={loading}
+              whileHover={!loading ? { scale: 1.02, y: -1 } : {}}
+              whileTap={!loading ? { scale: 0.98 } : {}}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="relative w-full py-4 rounded-xl font-bold text-sm text-white overflow-hidden disabled:opacity-60 disabled:cursor-not-allowed"
+              style={{ background: "linear-gradient(135deg, #1F4E79 0%, #2E75B6 60%, #3b8fd4 100%)" }}
+            >
+              {/* Shimmer */}
+              <motion.div
+                className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                animate={{ x: ["-120%", "220%"] }}
+                transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
+              />
+              <span className="relative flex items-center justify-center gap-2">
+                {loading ? (
+                  <>
+                    <motion.div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+                      animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: "linear" }} />
+                    Signing in…
+                  </>
+                ) : (
+                  <>
+                    Sign In
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                  </>
+                )}
+              </span>
+            </motion.button>
 
-              {/* Register link */}
-              <motion.p className="text-center text-sm text-white/30" {...fadeUp(0.7)}>
-                New to ClassVerse?{" "}
-                <Link
-                  to="/register"
-                  className="text-[#2E75B6] font-semibold hover:text-blue-300 underline underline-offset-2 decoration-[#2E75B6]/30 transition-colors duration-200"
-                >
-                  Create an account
-                </Link>
-              </motion.p>
-            </form>
-          </div>
+            {/* Divider */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-[#dce8f0]" />
+              <span className="text-xs text-[#a0b4c4] tracking-widest uppercase">or</span>
+              <div className="flex-1 h-px bg-[#dce8f0]" />
+            </div>
+
+            {/* Register link */}
+            <motion.p className="text-center text-sm text-[#5a7a96]"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
+              New to ClassVerse?{" "}
+              <Link to="/register"
+                className="text-[#1F4E79] font-bold hover:text-[#2E75B6] transition-colors underline underline-offset-2">
+                Create account
+              </Link>
+            </motion.p>
+          </form>
 
           {/* Footer */}
-          <motion.p className="text-center text-xs text-white/15 mt-5" {...fadeUp(0.9)}>
-            © 2025 ClassVerse · Secure e-Learning Platform 🔒
+          <motion.p className="text-center text-xs text-[#a0b4c4] mt-10"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
+            © 2025 ClassVerse · Secure E-Learning Platform
           </motion.p>
         </motion.div>
       </div>

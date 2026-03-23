@@ -6,6 +6,7 @@ import TeacherDashboard from "./pages/TeacherDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import ClassroomView from "./pages/ClassroomView";
 import AdminDashboard from "./pages/AdminDashboard";
+import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 
 function App() {
   return (
@@ -50,6 +51,11 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/superadmin" element={
+          <ProtectedRoute>
+            <SuperAdminDashboard />
+          </ProtectedRoute>
+        } />
       </Routes>
     </BrowserRouter>
   );
