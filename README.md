@@ -23,7 +23,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](/)
 [![Socket.io](https://img.shields.io/badge/Socket.io-Live_Chat-010101?style=for-the-badge&logo=socket.io)](/)
 [![HuggingFace](https://img.shields.io/badge/HuggingFace-AI_Summary-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)](/)
-[![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](/)
+
 
 <br/>
 
