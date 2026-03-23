@@ -7,18 +7,10 @@ const materialSchema = new mongoose.Schema(
       ref: "Classroom",
       required: true,
     },
-    title: {
-      type: String,
-      required: true,
-    },
-    fileType: {
-      type: String, // PDF or PPT
-      required: true,
-    },
-    filePath: {
-      type: String,
-      required: true,
-    },
+    title: { type: String, required: true },
+    description: { type: String, default: "" },   // ← must have this
+    fileType: { type: String, required: true },
+    filePath: { type: String, required: true },
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

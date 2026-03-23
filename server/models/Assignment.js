@@ -19,6 +19,14 @@ const assignmentSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    totalMarks: {
+      type: Number,
+      default: 100,
+    },
+    attachmentPath: {
+      type: String,
+      default: null,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
