@@ -606,16 +606,16 @@ organizations ──────────────────────
 
 ## 👨‍💻 Team
 
-| Name | Roll No | PRN | Role |
-|------|---------|-----|------|
-| Mayur Mahindrakar | 321009 | 22310185 | Project Manager |
-| Suraj Khaire | 321006 | 22310108 | Frontend Developer |
-| Harshal Laware | 321018 | 22310358 | Frontend Developer |
-| Nikhil Gaikwad | 321022 | 22310471 | Frontend Developer |
-| Suyash Kakade | 321023 | 22310483 | Backend Developer |
-| Prathmesh Jagdale | 321027 | 22310559 | Backend Developer |
-| Rohan Gaikwad | 321032 | 22310698 | Tester |
-| Pranav Khonde | 321033 | 22310729 | Documentation Head |
+| Name | Role |
+|------|------|
+| Mayur Mahindrakar | Project Manager |
+| Suraj Khaire | Frontend Developer |
+| Harshal Laware | Frontend Developer |
+| Nikhil Gaikwad | Frontend Developer |
+| Suyash Kakade | Backend Developer |
+| Prathmesh Jagdale | Backend Developer |
+| Rohan Gaikwad | Tester |
+| Pranav Khonde | Documentation Head |
 
 ---
 
