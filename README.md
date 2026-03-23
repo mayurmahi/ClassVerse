@@ -350,25 +350,6 @@ npm run dev
 
 ---
 
-## 🔑 Default Credentials
-
-> Created by `seed.js` — use these to test all roles immediately.
-
-```
-┌──────────────┬──────────────────────────────────┬─────────────┬─────────────────────────────┐
-│  Role        │  Email                            │  Password   │  Access                     │
-├──────────────┼──────────────────────────────────┼─────────────┼─────────────────────────────┤
-│  SuperAdmin  │  superadmin@classverse.com        │  super123   │  Full platform control       │
-│  Admin       │  admin@classverse.com             │  admin123   │  Demo org management         │
-│  Teacher     │  teacher@classverse.com           │  teacher123 │  Demo classroom              │
-│  Student     │  student@classverse.com           │  student123 │  Demo classroom access       │
-└──────────────┴──────────────────────────────────┴─────────────┴─────────────────────────────┘
-```
-
-> ⚠️ **Important:** Change all default credentials before any production deployment.
-
----
-
 ## ⚙️ Environment Variables
 
 | Variable | Required | Description |
