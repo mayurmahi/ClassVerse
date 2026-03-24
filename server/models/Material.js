@@ -8,9 +8,10 @@ const materialSchema = new mongoose.Schema(
       required: true,
     },
     title: { type: String, required: true },
-    description: { type: String, default: "" },   // ← must have this
+    description: { type: String, default: "" },
     fileType: { type: String, required: true },
-    filePath: { type: String, required: true },
+    filePath: { type: String, required: true },   
+    fileUrl: { type: String, required: true },    
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

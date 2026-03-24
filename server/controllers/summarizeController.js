@@ -125,6 +125,7 @@ const path = require("path");
 const mammoth = require("mammoth");
 const unzipper = require("unzipper");
 const xml2js = require("xml2js");
+const https = require("https");
 
 const extractPPTText = async (filePath) => {
   try {
@@ -155,24 +156,39 @@ const extractPPTText = async (filePath) => {
   }
 };
 
-// Extract text based on file type
-const extractText = async (filePath, fileType) => {
+
+// Cloudinary URL se file buffer download karo
+const downloadBuffer = (url) => {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      const chunks = [];
+      res.on('data', (chunk) => chunks.push(chunk));
+      res.on('end', () => resolve(Buffer.concat(chunks)));
+      res.on('error', reject);
+    });
+  });
+};
+const extractText = async (buffer, fileType) => {
   try {
     const type = fileType.toUpperCase();
 
     if (type === "PDF") {
       const pdfParse = require("pdf-parse");
-      const fileBuffer = fs.readFileSync(filePath);
-      const data = await pdfParse(fileBuffer);
+      const data = await pdfParse(buffer);
       return data.text;
     }
 
     if (type === "PPT" || type === "PPTX") {
-      return await extractPPTText(filePath);
+      // Buffer se temp file banao PPT ke liye
+      const tmp = path.join(__dirname, "../uploads", `temp_${Date.now()}.pptx`);
+      fs.writeFileSync(tmp, buffer);
+      const text = await extractPPTText(tmp);
+      fs.unlinkSync(tmp); // cleanup
+      return text;
     }
 
     if (type === "DOC" || type === "DOCX") {
-      const result = await mammoth.extractRawText({ path: filePath });
+      const result = await mammoth.extractRawText({ buffer });
       return result.value;
     }
 
@@ -214,15 +230,12 @@ const summarizeMaterial = async (req, res) => {
       return res.status(403).json({ message: "Not enrolled in this classroom" });
     }
 
-    const filePath = path.join(__dirname, "../uploads", material.filePath);
-
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ message: "File not found on server" });
+    
+    if (!material.fileUrl) {
+      return res.status(404).json({ message: "File URL not found" });
     }
-
-    const text = await extractText(filePath, material.fileType);
-    console.log("Extracted text:", text ? text.substring(0, 100) : "NULL");
-    console.log("File type:", material.fileType);
+    const buffer = await downloadBuffer(material.fileUrl);
+    const text = await extractText(buffer, material.fileType);
 
     if (!text || text.trim().length === 0) {
       return res.status(400).json({

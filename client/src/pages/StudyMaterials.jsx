@@ -143,21 +143,21 @@ const StudyMaterials = ({ classroomId }) => {
     const t = (type || "").toLowerCase();
     if (t === "pdf") return (
       <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-        <polyline points="10 9 9 9 8 9"/>
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
       </svg>
     );
     if (t === "ppt" || t === "pptx") return (
       <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+        <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" />
       </svg>
     );
     return (
       <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
       </svg>
     );
   };
@@ -174,7 +174,7 @@ const StudyMaterials = ({ classroomId }) => {
         <div className="relative flex-1 min-w-48">
           <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
             </svg>
           </span>
           <input type="text" placeholder="Search materials…" value={search}
@@ -201,8 +201,8 @@ const StudyMaterials = ({ classroomId }) => {
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
           <div className="bg-gradient-to-r from-[#1F4E79] to-[#2E75B6] px-5 py-4 flex items-center gap-2">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
             </svg>
             <h3 className="text-white font-semibold text-sm">Upload Study Material</h3>
           </div>
@@ -211,7 +211,7 @@ const StudyMaterials = ({ classroomId }) => {
             {error && (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 px-4 py-2.5 rounded-xl text-sm">
                 <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
                 {error}
               </div>
@@ -219,7 +219,7 @@ const StudyMaterials = ({ classroomId }) => {
             {success && (
               <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-2.5 rounded-xl text-sm">
                 <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <polyline points="20 6 9 17 4 12"/>
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
                 {success}
               </div>
@@ -257,9 +257,9 @@ const StudyMaterials = ({ classroomId }) => {
               className="w-full bg-[#1F4E79] hover:bg-[#2E75B6] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold text-sm py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2"
             >
               {loading ? (
-                <><svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>Uploading…</>
+                <><svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>Uploading…</>
               ) : (
-                <><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload Material</>
+                <><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>Upload Material</>
               )}
             </button>
           </form>
@@ -271,8 +271,8 @@ const StudyMaterials = ({ classroomId }) => {
         <div className="bg-white rounded-2xl border border-dashed border-gray-200 py-14 flex flex-col items-center justify-center text-center">
           <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-3">
             <svg className="w-6 h-6 text-[#2E75B6] opacity-60" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
             </svg>
           </div>
           <p className="text-gray-500 text-sm font-medium">No materials found</p>
@@ -309,25 +309,24 @@ const StudyMaterials = ({ classroomId }) => {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {/* View */}
                   <a
-                    href={"http://localhost:5000/uploads/" + m.filePath}
+                    href={`${import.meta.env.VITE_API_URL}/api/download/view/${m._id}`}
                     target="_blank" rel="noreferrer"
                     className="flex items-center gap-1.5 text-xs font-semibold text-[#1F4E79] hover:text-white hover:bg-[#1F4E79] border border-[#1F4E79]/30 hover:border-[#1F4E79] px-3 py-1.5 rounded-lg transition-all"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
                     </svg>
                     View
                   </a>
                   {/* Download */}
                   <a
-                    href={"http://localhost:5000/uploads/" + m.filePath}
-                    download
+                    href={`${import.meta.env.VITE_API_URL}/api/download/${m._id}`}
                     className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-white hover:bg-emerald-600 border border-emerald-200 hover:border-emerald-600 px-3 py-1.5 rounded-lg transition-all"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
                     </svg>
                     Download
                   </a>
@@ -337,8 +336,8 @@ const StudyMaterials = ({ classroomId }) => {
                       className="flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-white hover:bg-red-500 border border-red-200 hover:border-red-500 px-3 py-1.5 rounded-lg transition-all"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                       </svg>
                       Delete
                     </button>
@@ -361,10 +360,10 @@ const StudyMaterials = ({ classroomId }) => {
                       className="flex items-center gap-1.5 text-xs font-semibold text-[#2E75B6] hover:text-[#1F4E79] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                     >
                       {summaryLoading && summaryMaterialId === m._id ? (
-                        <><svg className="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>Summarizing…</>
+                        <><svg className="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>Summarizing…</>
                       ) : (
-                        <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                        {summaryMaterialId === m._id && summary ? "Hide Summary" : "AI Summarize"}</>
+                        <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
+                          {summaryMaterialId === m._id && summary ? "Hide Summary" : "AI Summarize"}</>
                       )}
                     </button>
 
@@ -381,10 +380,10 @@ const StudyMaterials = ({ classroomId }) => {
                       className="flex items-center gap-1.5 text-xs font-semibold text-purple-600 hover:text-purple-800 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                     >
                       {quizLoading && quizMaterialId === m._id ? (
-                        <><svg className="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>Generating Quiz…</>
+                        <><svg className="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>Generating Quiz…</>
                       ) : (
-                        <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
-                        {quizMaterialId === m._id && quizData ? "Hide Quiz" : "AI Quiz Me"}</>
+                        <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" /></svg>
+                          {quizMaterialId === m._id && quizData ? "Hide Quiz" : "AI Quiz Me"}</>
                       )}
                     </button>
                   </div>
@@ -394,7 +393,7 @@ const StudyMaterials = ({ classroomId }) => {
                     <div className="mt-3 bg-white border border-blue-100 rounded-xl p-4">
                       <div className="flex items-center gap-1.5 mb-2">
                         <svg className="w-3.5 h-3.5 text-[#2E75B6]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+                          <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" />
                         </svg>
                         <p className="text-xs font-bold text-[#1F4E79] uppercase tracking-wider">AI Summary</p>
                       </div>
@@ -408,7 +407,7 @@ const StudyMaterials = ({ classroomId }) => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
                           <svg className="w-3.5 h-3.5 text-purple-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
+                            <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" />
                           </svg>
                           <p className="text-xs font-bold text-purple-700 uppercase tracking-wider">Quick Quiz</p>
                         </div>
@@ -429,15 +428,14 @@ const StudyMaterials = ({ classroomId }) => {
                               return (
                                 <button key={oi}
                                   onClick={() => !quizSubmitted && setQuizAnswers((prev) => ({ ...prev, [qi]: opt }))}
-                                  className={`w-full text-left text-sm px-3 py-2.5 rounded-xl border transition-all ${
-                                    isCorrect
-                                      ? "bg-emerald-50 border-emerald-400 text-emerald-700 font-semibold"
-                                      : isWrong
+                                  className={`w-full text-left text-sm px-3 py-2.5 rounded-xl border transition-all ${isCorrect
+                                    ? "bg-emerald-50 border-emerald-400 text-emerald-700 font-semibold"
+                                    : isWrong
                                       ? "bg-red-50 border-red-400 text-red-600"
                                       : isSelected
-                                      ? "bg-purple-50 border-purple-400 text-purple-700 font-semibold"
-                                      : "bg-gray-50 border-gray-200 text-gray-600 hover:border-purple-300 hover:bg-purple-50/30"
-                                  } ${quizSubmitted ? "cursor-default" : "cursor-pointer"}`}
+                                        ? "bg-purple-50 border-purple-400 text-purple-700 font-semibold"
+                                        : "bg-gray-50 border-gray-200 text-gray-600 hover:border-purple-300 hover:bg-purple-50/30"
+                                    } ${quizSubmitted ? "cursor-default" : "cursor-pointer"}`}
                                 >
                                   {opt}
                                   {isCorrect && " ✓"}

@@ -79,6 +79,7 @@ app.use("/api/assignments", require("./routes/assignmentRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/summarize", require("./routes/summarizeRoutes"));
 app.use("/api/chat", require("./routes/chatRoutes"));
+app.use("/api/download", require("./routes/downloadRoute"));
 
 // Start server
 const PORT = process.env.PORT || 5000;
