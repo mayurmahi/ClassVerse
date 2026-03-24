@@ -21,9 +21,16 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["Admin", "Teacher", "Student"],
+      enum: ["SuperAdmin","Admin", "Teacher", "Student"],
       required: true,
     },
+     // null for SuperAdmin, set for all others
+    organizationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization",
+      default: null,
+    },
+
   },
   { timestamps: true }
 );

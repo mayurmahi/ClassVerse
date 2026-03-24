@@ -44,11 +44,11 @@ const socketHandler = (io) => {
     // User leaves room
     socket.on("leave-room", (classroomId) => {
       socket.leave(classroomId);
-      console.log("User left room:", classroomId);
+     
     });
 
     socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
+     
     });
   });
 };

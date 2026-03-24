@@ -11,6 +11,8 @@ const {
   deleteQuiz,
 } = require("../controllers/quizController");
 
+// ── Static / specific routes FIRST (before any /:param routes) ──────────────
+
 // AI suggest questions for teacher
 router.post("/suggest", auth, suggestQuestions);
 
@@ -20,8 +22,7 @@ router.post("/create", auth, createQuiz);
 // Get all quizzes for a classroom
 router.get("/classroom/:classroomId", auth, getQuizzesByClassroom);
 
-// Get single quiz
-router.get("/:quizId", auth, getQuizById);
+// ── Parameterised routes LAST ────────────────────────────────────────────────
 
 // Student submits quiz
 router.post("/:quizId/submit", auth, submitQuiz);
@@ -31,5 +32,8 @@ router.get("/:quizId/submissions", auth, getSubmissions);
 
 // Teacher deletes quiz
 router.delete("/:quizId", auth, deleteQuiz);
+
+// Get single quiz  ← must come after /:quizId/submissions & /:quizId/submit
+router.get("/:quizId", auth, getQuizById);
 
 module.exports = router;
