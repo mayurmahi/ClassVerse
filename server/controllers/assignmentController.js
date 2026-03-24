@@ -1,7 +1,25 @@
 const Assignment = require("../models/Assignment");
 const Submission = require("../models/Submission");
-const fs = require("fs");
-const path = require("path");
+const { cloudinary } = require("../config/cloudinary");
+
+// ── Helper: safely delete a file from Cloudinary ──────────────────────────────
+// resource_type must match how the file was originally uploaded.
+// With resource_type:"auto" on upload, Cloudinary auto-classifies:
+//   images (jpg/png/gif/webp)  → "image"
+//   videos                     → "video"
+//   everything else (pdf/doc…) → "raw"
+// We store resourceType / attachmentResType on the model at upload time so we
+// always pass the right value here. Errors are logged but never crash the caller.
+const destroyFromCloudinary = async (publicId, resourceType) => {
+  if (!publicId) return;
+  try {
+    await cloudinary.uploader.destroy(publicId, {
+      resource_type: resourceType || "raw",
+    });
+  } catch (err) {
+    console.error("Cloudinary destroy error:", err.message);
+  }
+};
 
 // ── POST /api/assignments/create — Teacher creates assignment ─────────────────
 const createAssignment = async (req, res) => {
@@ -22,9 +40,15 @@ const createAssignment = async (req, res) => {
       description,
       deadline: new Date(deadline),
       totalMarks: totalMarks ? Number(totalMarks) : 100,
-      attachmentPath: req.file ? req.file.filename : null,
       createdBy: req.user.id,
     });
+
+    // FIX: save Cloudinary public_id, CDN URL and resource_type instead of disk filename
+    if (req.file) {
+      assignment.attachmentPath    = req.file.filename;               // Cloudinary public_id
+      assignment.attachmentUrl     = req.file.path;                   // Cloudinary CDN URL
+      assignment.attachmentResType = req.file.resource_type || "raw"; // for deletion
+    }
 
     await assignment.save();
 
@@ -55,6 +79,15 @@ const updateAssignment = async (req, res) => {
     if (deadline)    assignment.deadline    = new Date(deadline);
     if (totalMarks)  assignment.totalMarks  = Number(totalMarks);
 
+    // FIX: if a new attachment is uploaded, delete the old one from Cloudinary first,
+    //      then save the new Cloudinary file details
+    if (req.file) {
+      await destroyFromCloudinary(assignment.attachmentPath, assignment.attachmentResType);
+      assignment.attachmentPath    = req.file.filename;
+      assignment.attachmentUrl     = req.file.path;
+      assignment.attachmentResType = req.file.resource_type || "raw";
+    }
+
     await assignment.save();
 
     res.status(200).json({ message: "Assignment updated successfully", assignment });
@@ -77,18 +110,20 @@ const deleteAssignment = async (req, res) => {
       return res.status(403).json({ message: "Not authorized to delete this assignment" });
     }
 
-    // Delete teacher's attachment file from disk (if any)
+    // FIX: delete teacher's attachment from Cloudinary (was deleting from disk before)
     if (assignment.attachmentPath) {
-      const attachPath = path.join(__dirname, "../uploads", assignment.attachmentPath);
-      if (fs.existsSync(attachPath)) fs.unlinkSync(attachPath);
+      await destroyFromCloudinary(assignment.attachmentPath, assignment.attachmentResType);
     }
 
-    // Delete all student submission files + records for this assignment
+    // FIX: delete every student submission file from Cloudinary (was deleting from disk before)
     const submissions = await Submission.find({ assignmentId: assignment._id });
-    for (const sub of submissions) {
-      const subFile = path.join(__dirname, "../uploads", sub.filePathOrText);
-      if (fs.existsSync(subFile)) fs.unlinkSync(subFile);
-    }
+    await Promise.all(
+      submissions.map((sub) =>
+        destroyFromCloudinary(sub.filePathOrText, sub.resourceType)
+      )
+    );
+
+    // Delete all submission records from DB
     await Submission.deleteMany({ assignmentId: assignment._id });
 
     await assignment.deleteOne();
@@ -146,9 +181,11 @@ const submitAssignment = async (req, res) => {
 
     const submission = new Submission({
       assignmentId,
-      studentId: req.user.id,
-      filePathOrText: req.file.filename,
-      note: note || "",
+      studentId:      req.user.id,
+      filePathOrText: req.file.filename,               // FIX: Cloudinary public_id (was disk filename)
+      fileUrl:        req.file.path,                   // FIX: Cloudinary CDN URL for frontend reads
+      resourceType:   req.file.resource_type || "raw", // FIX: stored for correct deletion later
+      note:           note || "",
     });
 
     await submission.save();
@@ -175,9 +212,8 @@ const deleteSubmission = async (req, res) => {
       return res.status(400).json({ message: "Cannot delete submission after deadline" });
     }
 
-    // Delete uploaded file from disk
-    const filePath = path.join(__dirname, "../uploads", submission.filePathOrText);
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    // FIX: delete submitted file from Cloudinary (was deleting from disk before)
+    await destroyFromCloudinary(submission.filePathOrText, submission.resourceType);
 
     await Submission.findByIdAndDelete(req.params.submissionId);
 
