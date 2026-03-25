@@ -1,5 +1,5 @@
 const Material = require("../models/Material");
-const { cloudinary } = require("../config/cloudinary"); // ← add kiya
+const { cloudinary } = require("../config/cloudinary");
 
 // ── POST /api/materials/upload — Teacher uploads material ─────────────────────
 const uploadMaterial = async (req, res) => {
@@ -22,14 +22,19 @@ const uploadMaterial = async (req, res) => {
     const fileTypeMap = { pdf: "pdf", ppt: "ppt", pptx: "pptx", doc: "doc", docx: "docx" };
     const fileType = fileTypeMap[ext] || ext;
 
+    // FIX: Cloudinary returns resource_type on req.file — store it so we can
+    // use the correct type when deleting. Falls back to "raw" for docs/PDFs.
+    const resourceType = req.file.resource_type || "raw";
+
     const material = new Material({
       classroomId,
       title,
       description: description || "",
-      fileType,
-      filePath: req.file.filename,   // Cloudinary public_id — delete ke liye
-      fileUrl:  req.file.path,       // ← Cloudinary URL — read ke liye
-      uploadedBy: req.user.id,
+      filePath:     req.file.filename,   // Cloudinary public_id — for deletion
+      fileType, 
+      fileUrl:      req.file.path,       // Cloudinary CDN URL   — for reads
+      resourceType,                      // FIX: persisted so delete uses right type
+      uploadedBy:   req.user.id,
     });
 
     await material.save();
@@ -66,8 +71,10 @@ const deleteMaterial = async (req, res) => {
       return res.status(403).json({ message: "Not authorized to delete this material" });
     }
 
-    // Cloudinary se file delete karo (disk se nahi ab)
-    await cloudinary.uploader.destroy(material.filePath, { resource_type: "raw" });
+    // FIX: use the stored resourceType instead of hardcoding "raw".
+    // Hardcoding "raw" silently fails for images uploaded with resource_type "image".
+    const resourceType = material.resourceType || "raw";
+    await cloudinary.uploader.destroy(material.filePath, { resource_type: resourceType });
 
     await material.deleteOne();
     res.status(200).json({ message: "Material deleted successfully" });

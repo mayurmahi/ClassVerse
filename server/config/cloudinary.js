@@ -12,7 +12,7 @@ const storage = new CloudinaryStorage({
     const ext = file.originalname.split('.').pop().toLowerCase();
     return {
       folder: 'classroom-materials',
-      allowed_formats: ['pdf', 'ppt', 'pptx', 'doc', 'docx'],
+      // allowed_formats: ['pdf', 'ppt', 'pptx', 'doc', 'docx'],
       resource_type: 'raw',
       public_id: Date.now() + '-' + Math.round(Math.random() * 1e9),
     };

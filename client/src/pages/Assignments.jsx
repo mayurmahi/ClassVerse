@@ -36,6 +36,12 @@ const GradeBadge = ({ grade }) => {
   );
 };
 
+// ── Helper: resolve a file URL (Cloudinary or legacy localhost) ───────────────
+// If the backend now stores fileUrl (Cloudinary), prefer that.
+// Fall back to the old localhost path for any pre-migration records.
+const resolveUrl = (fileUrl, legacyPath) =>
+  fileUrl || `http://localhost:5000/uploads/${legacyPath}`;
+
 // ── Main Component ────────────────────────────────────────────────────────────
 const Assignments = ({ classroomId }) => {
   const { user } = useAuth();
@@ -55,17 +61,17 @@ const Assignments = ({ classroomId }) => {
   const [loading, setLoading] = useState(false);
 
   // Student submission state (per assignment)
-  const [submitFile, setSubmitFile] = useState({});       // { assignmentId: File }
-  const [submitNote, setSubmitNote] = useState({});        // { assignmentId: string }
-  const [expandSubmit, setExpandSubmit] = useState({});    // which card shows upload panel
-  const [mySubmissions, setMySubmissions] = useState({});  // { assignmentId: submission }
+  const [submitFile, setSubmitFile] = useState({});
+  const [submitNote, setSubmitNote] = useState({});
+  const [expandSubmit, setExpandSubmit] = useState({});
+  const [mySubmissions, setMySubmissions] = useState({});
 
   // Teacher view-submissions state
   const [viewSubmissionsId, setViewSubmissionsId] = useState(null);
-  const [submissions, setSubmissions] = useState({});      // { assignmentId: [submission] }
+  const [submissions, setSubmissions] = useState({});
 
   // Teacher grading
-  const [gradingId, setGradingId] = useState(null);       // submissionId being graded
+  const [gradingId, setGradingId] = useState(null);
   const [gradeValue, setGradeValue] = useState("");
   const [gradeFeedback, setGradeFeedback] = useState("");
 
@@ -331,11 +337,6 @@ const Assignments = ({ classroomId }) => {
       {/* Student global alerts */}
       {user.role === "Student" && error   && <AlertError msg={error} />}
       {user.role === "Student" && success && <AlertSuccess msg={success} />}
-      {user.role === "Teacher" && !loading && (
-        <div className="space-y-1">
-          {/* alerts shown inside form already */}
-        </div>
-      )}
 
       {/* ══════════════ ASSIGNMENTS LIST ══════════════ */}
       {assignments.length === 0 ? (
@@ -366,7 +367,6 @@ const Assignments = ({ classroomId }) => {
                 {/* ── Card Header ── */}
                 <div className="px-5 py-4">
                   {isEditing ? (
-                    /* Edit mode */
                     <div className="space-y-3">
                       <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)}
                         className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2E75B6] focus:border-transparent"
@@ -445,7 +445,6 @@ const Assignments = ({ classroomId }) => {
                         </div>
                       </div>
 
-                      {/* Right: status + teacher actions */}
                       <div className="flex flex-col items-end gap-2 flex-shrink-0">
                         {passed ? (
                           <span className="flex items-center gap-1 bg-red-50 text-red-600 border border-red-100 text-xs font-semibold px-2.5 py-1 rounded-full">
@@ -486,8 +485,9 @@ const Assignments = ({ classroomId }) => {
                   {/* Teacher attachment file */}
                   {!isEditing && a.attachmentPath && (
                     <div className="mt-3 ml-13">
+                      {/* ✅ FIX: prefer attachmentUrl (Cloudinary), fall back to legacy localhost path */}
                       <a
-                        href={"http://localhost:5000/uploads/" + a.attachmentPath}
+                        href={resolveUrl(a.attachmentUrl, a.attachmentPath)}
                         target="_blank" rel="noreferrer"
                         className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2E75B6] hover:text-[#1F4E79] bg-blue-50 hover:bg-blue-100 border border-blue-100 px-3 py-1.5 rounded-lg transition-colors"
                       >
@@ -504,7 +504,6 @@ const Assignments = ({ classroomId }) => {
                 {user.role === "Student" && !isEditing && (
                   <div className="border-t border-gray-100 px-5 py-3.5 bg-gray-50/60">
                     {mySub ? (
-                      /* Already submitted */
                       <div className="space-y-2">
                         <div className="flex flex-wrap items-center gap-3">
                           <span className="flex items-center gap-1.5 bg-blue-50 text-[#1F4E79] border border-blue-100 text-xs font-semibold px-3 py-1.5 rounded-full">
@@ -516,8 +515,9 @@ const Assignments = ({ classroomId }) => {
                           {mySub.grade !== undefined && mySub.grade !== null && (
                             <GradeBadge grade={mySub.grade} />
                           )}
+                          {/* ✅ FIX: prefer fileUrl (Cloudinary), fall back to legacy path */}
                           <a
-                            href={"http://localhost:5000/uploads/" + mySub.filePathOrText}
+                            href={resolveUrl(mySub.fileUrl, mySub.filePathOrText)}
                             target="_blank" rel="noreferrer"
                             className="flex items-center gap-1.5 text-xs font-semibold text-[#2E75B6] hover:text-[#1F4E79] transition-colors"
                           >
@@ -539,7 +539,6 @@ const Assignments = ({ classroomId }) => {
                             </button>
                           )}
                         </div>
-                        {/* Teacher feedback */}
                         {mySub.feedback && (
                           <div className="bg-white border border-amber-100 rounded-xl px-4 py-3 mt-2">
                             <p className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">Teacher Feedback</p>
@@ -551,7 +550,6 @@ const Assignments = ({ classroomId }) => {
                         ) : null}
                       </div>
                     ) : !passed ? (
-                      /* Not submitted, open */
                       <div>
                         {expandSubmit[a._id] ? (
                           <div className="space-y-3">
@@ -677,8 +675,9 @@ const Assignments = ({ classroomId }) => {
                                         Ungraded
                                       </span>
                                     )}
+                                    {/* ✅ FIX: prefer fileUrl (Cloudinary), fall back to legacy path */}
                                     <a
-                                      href={"http://localhost:5000/uploads/" + s.filePathOrText}
+                                      href={resolveUrl(s.fileUrl, s.filePathOrText)}
                                       target="_blank" rel="noreferrer"
                                       className="flex items-center gap-1.5 text-xs font-semibold text-[#1F4E79] hover:text-white hover:bg-[#1F4E79] border border-[#1F4E79]/30 hover:border-[#1F4E79] px-3 py-1.5 rounded-lg transition-all"
                                     >
@@ -704,7 +703,6 @@ const Assignments = ({ classroomId }) => {
                                   </div>
                                 </div>
 
-                                {/* Grading panel */}
                                 {gradingId === s._id && (
                                   <div className="mt-3 bg-purple-50 border border-purple-100 rounded-xl p-4 space-y-3">
                                     <p className="text-xs font-bold text-purple-700 uppercase tracking-wider">Grade Submission</p>
@@ -742,7 +740,6 @@ const Assignments = ({ classroomId }) => {
                                   </div>
                                 )}
 
-                                {/* Show existing feedback */}
                                 {s.feedback && gradingId !== s._id && (
                                   <div className="mt-2 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
                                     <p className="text-xs font-semibold text-amber-600">Feedback: <span className="font-normal text-gray-600">{s.feedback}</span></p>
