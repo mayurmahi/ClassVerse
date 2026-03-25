@@ -586,6 +586,8 @@ const StudentQuizModal = ({ quiz, onClose, onSubmitted }) => {
   const [result, setResult] = useState(null);
 
   const expired = quiz.isExpired || new Date(quiz.deadline) < new Date();
+  
+  // ✅ If already submitted, show previous result immediately
   const alreadySubmitted = !!quiz.submission && !result;
 
   const selectAnswer = (qi, opt) => {
@@ -595,14 +597,24 @@ const StudentQuizModal = ({ quiz, onClose, onSubmitted }) => {
 
   const handleSubmit = async () => {
     const unanswered = quiz.questions.filter((_, i) => !answers[i]);
-    if (unanswered.length > 0) { setError(`Please answer all ${quiz.questions.length} questions.`); return; }
+    if (unanswered.length > 0) {
+      setError(`Please answer all ${quiz.questions.length} questions.`);
+      return;
+    }
 
-    setSubmitting(true); setError("");
+    setSubmitting(true);
+    setError("");
+
     try {
       const answersArr = Object.entries(answers).map(([idx, opt]) => ({
-        questionIndex: Number(idx), selectedOption: opt,
+        questionIndex: Number(idx),
+        selectedOption: opt,
       }));
-      const res = await api.post(`/quiz/${quiz._id}/submit`, { answers: answersArr });
+
+      const res = await api.post(`/quiz/${quiz._id}/submit`, {
+        answers: answersArr,
+      });
+
       setResult(res.data.result);
       onSubmitted();
     } catch (err) {
@@ -612,7 +624,14 @@ const StudentQuizModal = ({ quiz, onClose, onSubmitted }) => {
     }
   };
 
-  const displayQuestions = result ? result.questions : quiz.questions;
+  // ✅ Build display result from previous submission if it exists
+  const displayResult = result || (quiz.submission ? {
+    totalMarksAwarded: quiz.submission.totalMarksAwarded,
+    totalMarks: quiz.submission.totalMarks,
+    percentage: quiz.submission.percentage,
+    questions: quiz.questions,
+    gradedAnswers: quiz.submission.answers,
+  } : null);
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3">
@@ -638,88 +657,85 @@ const StudentQuizModal = ({ quiz, onClose, onSubmitted }) => {
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          {quiz.description && (
-            <div className="bg-purple-50 border border-purple-100 rounded-xl p-3">
-              <p className="text-sm text-purple-700">{quiz.description}</p>
-            </div>
-          )}
 
-          {alreadySubmitted && (
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <p className="text-sm font-bold text-[#1F4E79]">You already submitted this quiz</p>
-              <p className="text-sm text-blue-700 mt-1">
-                Score: {quiz.submission.totalMarksAwarded}/{quiz.submission.totalMarks} ({quiz.submission.percentage}%)
-              </p>
-              <p className="text-xs text-blue-400 mt-0.5">Submitted: {fmtDateTime(quiz.submission.submittedAt)}</p>
-            </div>
-          )}
-
-          {result && (
+          {/* ✅ Show score banner if already submitted or just submitted */}
+          {displayResult && (
             <div className={`border rounded-xl p-4 ${
-              result.percentage >= 75 ? "bg-emerald-50 border-emerald-200" :
-              result.percentage >= 50 ? "bg-amber-50 border-amber-200" : "bg-red-50 border-red-200"
+              displayResult.percentage >= 75 ? "bg-emerald-50 border-emerald-200" :
+              displayResult.percentage >= 50 ? "bg-amber-50 border-amber-200" : "bg-red-50 border-red-200"
             }`}>
               <p className="text-base font-bold text-gray-800">
-                {result.percentage >= 75 ? "🎉 Excellent!" : result.percentage >= 50 ? "👍 Good effort!" : "📚 Keep practising!"}
+                {displayResult.percentage >= 75 ? "🎉 Excellent!" : displayResult.percentage >= 50 ? "👍 Good effort!" : "📚 Keep practising!"}
               </p>
               <p className="mt-1">
-                <span className="text-3xl font-black text-gray-800">{result.totalMarksAwarded}</span>
-                <span className="text-gray-400 text-base"> / {result.totalMarks} marks</span>
+                <span className="text-3xl font-black text-gray-800">{displayResult.totalMarksAwarded}</span>
+                <span className="text-gray-400 text-base"> / {displayResult.totalMarks} marks</span>
               </p>
               <p className="text-sm text-gray-500 mt-0.5">
-                {result.percentage}% · {result.gradedAnswers.filter((a) => a.isCorrect).length} correct out of {result.questions.length}
+                {displayResult.percentage}% · {displayResult.gradedAnswers?.filter((a) => a.isCorrect).length} correct out of {displayResult.questions?.length}
               </p>
+              {alreadySubmitted && (
+                <p className="text-xs text-gray-400 mt-1">
+                  Submitted: {fmtDateTime(quiz.submission.submittedAt)}
+                </p>
+              )}
             </div>
           )}
 
-          {(!alreadySubmitted) && (
-            <div className="space-y-5">
-              {displayQuestions.map((q, qi) => {
-                const selected = result ? result.gradedAnswers[qi]?.selectedOption : answers[qi];
-                return (
-                  <div key={qi} className="border border-gray-100 rounded-xl p-4">
-                    <p className="text-sm font-semibold text-gray-800 mb-3">
-                      {qi + 1}. {q.question}
-                      <span className="ml-2 text-xs text-gray-400 font-normal">({q.marks} mark{q.marks !== 1 ? "s" : ""})</span>
-                    </p>
-                    <div className="space-y-2">
-                      {q.options.map((opt, oi) => {
-                        const isSelected = selected === opt;
-                        const isCorrect = result && opt === q.answer;
-                        const isWrong = result && isSelected && !isCorrect;
-                        return (
-                          <button key={oi}
-                            onClick={() => selectAnswer(qi, opt)}
-                            disabled={!!result || expired}
-                            className={`w-full text-left text-sm px-4 py-2.5 rounded-xl border transition-all ${
-                              isCorrect
-                                ? "bg-emerald-50 border-emerald-400 text-emerald-700 font-semibold"
-                                : isWrong
-                                ? "bg-red-50 border-red-400 text-red-600"
-                                : isSelected
-                                ? "bg-purple-50 border-purple-400 text-purple-700 font-semibold"
-                                : "bg-gray-50 border-gray-200 text-gray-600 hover:border-purple-300 hover:bg-purple-50/30"
-                            } ${result || expired ? "cursor-default" : "cursor-pointer"}`}
-                          >
-                            {opt}
-                            {isCorrect && " ✓"}
-                            {isWrong && " ✗"}
-                          </button>
-                        );
-                      })}
-                    </div>
+          {/* ✅ Show questions with answers highlighted (read-only after submission) */}
+          <div className="space-y-5">
+            {quiz.questions.map((q, qi) => {
+              const gradedAnswer = displayResult?.gradedAnswers?.[qi];
+              const selected = gradedAnswer?.selectedOption ?? answers[qi];
+
+              return (
+                <div key={qi} className="border border-gray-100 rounded-xl p-4">
+                  <p className="text-sm font-semibold text-gray-800 mb-3">
+                    {qi + 1}. {q.question}
+                    <span className="ml-2 text-xs text-gray-400 font-normal">
+                      ({q.marks || q.suggestedMarks || 1} mark)
+                    </span>
+                  </p>
+                  <div className="space-y-2">
+                    {q.options.map((opt, oi) => {
+                      const isSelected = selected === opt;
+                      const isCorrect = displayResult && opt === q.answer;
+                      const isWrong = displayResult && isSelected && !isCorrect;
+
+                      return (
+                        <button key={oi}
+                          onClick={() => selectAnswer(qi, opt)}
+                          // ✅ Disable if already submitted or just got result
+                          disabled={!!displayResult || expired}
+                          className={`w-full text-left text-sm px-4 py-2.5 rounded-xl border transition-all ${
+                            isCorrect
+                              ? "bg-emerald-50 border-emerald-400 text-emerald-700 font-semibold"
+                              : isWrong
+                              ? "bg-red-50 border-red-400 text-red-600"
+                              : isSelected
+                              ? "bg-purple-50 border-purple-400 text-purple-700 font-semibold"
+                              : "bg-gray-50 border-gray-200 text-gray-600 hover:border-purple-300 hover:bg-purple-50/30"
+                          } ${displayResult || expired ? "cursor-default" : "cursor-pointer"}`}
+                        >
+                          {opt}
+                          {isCorrect && " ✓"}
+                          {isWrong && " ✗"}
+                        </button>
+                      );
+                    })}
                   </div>
-                );
-              })}
-            </div>
-          )}
+                </div>
+              );
+            })}
+          </div>
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">{error}</div>
           )}
         </div>
 
-        {!alreadySubmitted && !result && !expired && (
+        {/* ✅ Show submit button only if not submitted and not expired */}
+        {!displayResult && !expired && (
           <div className="border-t border-gray-100 px-5 py-4 flex items-center justify-between flex-shrink-0 bg-gray-50/60">
             <p className="text-xs text-gray-500">
               {Object.keys(answers).length}/{quiz.questions.length} answered
@@ -733,7 +749,9 @@ const StudentQuizModal = ({ quiz, onClose, onSubmitted }) => {
             </button>
           </div>
         )}
-        {(result || alreadySubmitted) && (
+
+        {/* ✅ Show close button after submission or if already submitted */}
+        {(displayResult || expired) && (
           <div className="border-t border-gray-100 px-5 py-4 flex justify-end flex-shrink-0">
             <button onClick={onClose}
               className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm px-6 py-2.5 rounded-xl transition-colors">
