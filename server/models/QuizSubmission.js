@@ -30,6 +30,7 @@ const quizSubmissionSchema = new mongoose.Schema(
     percentage: { type: Number, default: 0 },
     submittedAt: { type: Date, default: Date.now },
   },
+  
   { timestamps: true }
 );
 
