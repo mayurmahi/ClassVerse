@@ -38,6 +38,7 @@ const uploadMaterial = async (req, res) => {
     });
 
     await material.save();
+    console.log("REQ FILE:", req.file);
     res.status(201).json({ message: "Material uploaded successfully", material });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });

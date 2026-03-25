@@ -4,7 +4,7 @@ import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 // Connect to socket server
-const socket = io("http://localhost:5000");
+const socket = io(`${import.meta.env.VITE_API_URL}`);
 
 const Chat = ({ classroomId }) => {
   const { user } = useAuth();

@@ -1262,10 +1262,7 @@ const StudyMaterials = ({ classroomId }) => {
 
                   {/* Download button — raw URL always triggers download, correct behaviour */}
                  <a
-                    href={m.fileUrl}
-                    download={`${m.fileName || "file"}.${m.fileType}`}
-                    target="_blank"
-                    rel="noreferrer"
+                    href={`${import.meta.env.VITE_API_URL}/api/download/${m._id}`}
                     className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-white hover:bg-emerald-600 border border-emerald-200 hover:border-emerald-600 px-3 py-1.5 rounded-lg transition-all"
                   >
                     Download

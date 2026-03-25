@@ -351,3 +351,239 @@ module.exports = {
   getSubmissions,
   deleteQuiz,
 };
+
+
+
+
+// const Quiz = require("../models/Quiz");
+// const QuizSubmission = require("../models/QuizSubmission");
+// const Material = require("../models/Material");
+// const axios = require("axios");
+
+// // ── SUGGEST QUESTIONS ────────────────────────────────────────────────────────
+// const suggestQuestions = async (req, res) => {
+//   try {
+//     if (req.user.role !== "Teacher") {
+//       return res.status(403).json({ message: "Only teachers can use this" });
+//     }
+
+//     const { materialId } = req.body;
+//     if (!materialId) {
+//       return res.status(400).json({ message: "materialId is required" });
+//     }
+
+//     const material = await Material.findById(materialId);
+//     if (!material) {
+//       return res.status(404).json({ message: "Material not found" });
+//     }
+
+//     let fileContent = null;
+
+//     // ✅ Cloudinary PDF
+//     if (material.fileType === "pdf" && material.fileUrl) {
+//       try {
+//         const pdfParse = require("pdf-parse");
+
+//         const response = await axios.get(material.fileUrl, {
+//           responseType: "arraybuffer",
+//         });
+
+//         const data = await pdfParse(response.data);
+//         fileContent = data.text.slice(0, 3000);
+//       } catch (err) {
+//         console.error("Cloudinary PDF error:", err.message);
+//       }
+//     }
+
+//     const contentBlock = fileContent
+//       ? `Content:\n${fileContent}`
+//       : `Topic: ${material.title}`;
+
+//     const prompt = `Generate exactly 8 MCQ questions in JSON format ONLY:
+
+// {
+//  "questions":[
+//   {
+//    "question":"",
+//    "options":["","","",""],
+//    "answer":"",
+//    "suggestedMarks":1
+//   }
+//  ]
+// }
+
+// Rules:
+// - Exactly 4 options
+// - Answer must match one option exactly
+// - No explanation
+
+// ${contentBlock}`;
+
+//     let response;
+
+//     try {
+//       response = await axios.post(
+//         "https://openrouter.ai/api/v1/chat/completions",
+//         {
+//           model: "meta-llama/llama-3-8b-instruct",
+//           messages: [{ role: "user", content: prompt }],
+//         },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+//             "Content-Type": "application/json",
+//           },
+//         }
+//       );
+//     } catch (err) {
+//       console.log("OpenRouter ERROR:", err.response?.data || err.message);
+//       return res.status(500).json({ message: "AI API failed" });
+//     }
+
+//     const raw = response.data?.choices?.[0]?.message?.content || "";
+
+//     if (!raw) {
+//       return res.status(500).json({ message: "Empty AI response" });
+//     }
+
+//     // ✅ Extract JSON
+//     const clean = raw.replace(/```json|```/g, "").trim();
+
+//     const start = clean.indexOf("{");
+//     const end = clean.lastIndexOf("}");
+
+//     if (start === -1 || end === -1) {
+//       return res.status(500).json({
+//         message: "Invalid AI format",
+//       });
+//     }
+
+//     let parsed;
+//     try {
+//       parsed = JSON.parse(clean.slice(start, end + 1));
+//     } catch {
+//       return res.status(500).json({
+//         message: "Invalid JSON from AI",
+//       });
+//     }
+
+//     res.json({ questions: parsed.questions });
+
+//   } catch (err) {
+//     console.error("suggestQuestions error:", err);
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+// // ── CREATE QUIZ ──────────────────────────────────────────────────────────────
+// const createQuiz = async (req, res) => {
+//   try {
+//     const { classroomId, materialId, title, deadline, questions } = req.body;
+
+//     if (!classroomId || !materialId || !title || !deadline || !questions?.length) {
+//       return res.status(400).json({ message: "Missing required fields" });
+//     }
+
+//     const totalMarks = questions.reduce(
+//       (sum, q) => sum + (q.suggestedMarks || 1),
+//       0
+//     );
+
+//     const quiz = await Quiz.create({
+//       classroomId,
+//       materialId,
+//       title,
+//       deadline,
+//       questions,
+//       totalMarks,
+//       createdBy: req.user.id, // ✅ FIX
+//     });
+
+//     res.json({ quiz });
+
+//   } catch (err) {
+//     console.error("createQuiz error:", err);
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+// // ── SUBMIT QUIZ (FULLY FIXED) ────────────────────────────────────────────────
+// const submitQuiz = async (req, res) => {
+//   try {
+//     const { quizId, answers } = req.body;
+
+//     if (!quizId || !answers?.length) {
+//       return res.status(400).json({ message: "Missing data" });
+//     }
+
+//     const quiz = await Quiz.findById(quizId);
+
+//     if (!quiz) {
+//       return res.status(404).json({ message: "Quiz not found" });
+//     }
+
+//     // ✅ Evaluate answers
+//     const evaluatedAnswers = answers.map((ans, index) => {
+//       const correctAnswer = quiz.questions[index].answer;
+
+//       return {
+//         ...ans,
+//         isCorrect: ans.selectedOption === correctAnswer,
+//       };
+//     });
+
+//     // ✅ Calculate score
+//     const score = evaluatedAnswers.reduce(
+//       (total, ans, index) =>
+//         ans.isCorrect
+//           ? total + (quiz.questions[index].suggestedMarks || 1)
+//           : total,
+//       0
+//     );
+
+//     const submission = await QuizSubmission.create({
+//       quizId,
+//       classroomId: quiz.classroomId,
+//       studentId: req.user.id,
+//       answers: evaluatedAnswers,
+//       score,
+//     });
+
+//     res.json({ submission });
+
+//   } catch (err) {
+//     console.error("submitQuiz error:", err);
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+// // ── OTHER CONTROLLERS ────────────────────────────────────────────────────────
+// const getQuizzesByClassroom = async (req, res) => {
+//   const quizzes = await Quiz.find({ classroomId: req.params.classroomId });
+//   res.json({ quizzes });
+// };
+
+// const getQuizById = async (req, res) => {
+//   const quiz = await Quiz.findById(req.params.quizId);
+//   res.json({ quiz });
+// };
+
+// const getSubmissions = async (req, res) => {
+//   const submissions = await QuizSubmission.find({ quizId: req.params.quizId });
+//   res.json({ submissions });
+// };
+
+// const deleteQuiz = async (req, res) => {
+//   await Quiz.findByIdAndDelete(req.params.quizId);
+//   res.json({ message: "Deleted" });
+// };
+
+// module.exports = {
+//   suggestQuestions,
+//   createQuiz,
+//   getQuizzesByClassroom,
+//   getQuizById,
+//   submitQuiz,
+//   getSubmissions,
+//   deleteQuiz,
+// };
