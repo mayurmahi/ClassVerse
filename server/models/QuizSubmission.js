@@ -1,10 +1,12 @@
 const mongoose = require("mongoose");
 
 const answerSchema = new mongoose.Schema({
-  questionIndex: { type: Number, required: true },
+  questionIndex:  { type: Number, required: true },
   selectedOption: { type: String, required: true },
-  isCorrect: { type: Boolean, required: true },
-  marksAwarded: { type: Number, default: 0 },
+  // Graded immediately at submit time; exposed to student only after
+  // the teacher publishes answers (quiz.answersPublished === true).
+  isCorrect:    { type: Boolean, required: true },
+  marksAwarded: { type: Number,  default: 0 },
 });
 
 const quizSubmissionSchema = new mongoose.Schema(
@@ -24,13 +26,12 @@ const quizSubmissionSchema = new mongoose.Schema(
       ref: "Classroom",
       required: true,
     },
-    answers: [answerSchema],
+    answers:           [answerSchema],
     totalMarksAwarded: { type: Number, default: 0 },
-    totalMarks: { type: Number, default: 0 },
-    percentage: { type: Number, default: 0 },
-    submittedAt: { type: Date, default: Date.now },
+    totalMarks:        { type: Number, default: 0 },
+    percentage:        { type: Number, default: 0 },
+    submittedAt:       { type: Date,   default: Date.now },
   },
-  
   { timestamps: true }
 );
 

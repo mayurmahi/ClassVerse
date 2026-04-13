@@ -1,9 +1,10 @@
 const express = require("express");
-const router = express.Router();
-const auth = require("../middleware/authMiddleware");
+const router  = express.Router();
+const auth    = require("../middleware/authMiddleware");
 const {
   suggestQuestions,
   createQuiz,
+  publishAnswers,
   getQuizzesByClassroom,
   getQuizById,
   submitQuiz,
@@ -11,29 +12,16 @@ const {
   deleteQuiz,
 } = require("../controllers/quizController");
 
-// ── Static / specific routes FIRST (before any /:param routes) ──────────────
+// ── Static routes first ──────────────────────────────────────────────────────
+router.post("/suggest",                 auth, suggestQuestions);
+router.post("/create",                  auth, createQuiz);
+router.get("/classroom/:classroomId",   auth, getQuizzesByClassroom);
 
-// AI suggest questions for teacher
-router.post("/suggest", auth, suggestQuestions);
-
-// Teacher creates quiz
-router.post("/create", auth, createQuiz);
-
-// Get all quizzes for a classroom
-router.get("/classroom/:classroomId", auth, getQuizzesByClassroom);
-
-// ── Parameterised routes LAST ────────────────────────────────────────────────
-
-// Student submits quiz
-router.post("/:quizId/submit", auth, submitQuiz);
-
-// Teacher views all submissions for a quiz
-router.get("/:quizId/submissions", auth, getSubmissions);
-
-// Teacher deletes quiz
-router.delete("/:quizId", auth, deleteQuiz);
-
-// Get single quiz  ← must come after /:quizId/submissions & /:quizId/submit
-router.get("/:quizId", auth, getQuizById);
+// ── Parameterised routes ─────────────────────────────────────────────────────
+router.post("/:quizId/submit",          auth, submitQuiz);
+router.patch("/:quizId/publish-answers", auth, publishAnswers);   // ← NEW
+router.get("/:quizId/submissions",      auth, getSubmissions);
+router.delete("/:quizId",              auth, deleteQuiz);
+router.get("/:quizId",                 auth, getQuizById);
 
 module.exports = router;
