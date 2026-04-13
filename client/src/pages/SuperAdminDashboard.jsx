@@ -58,9 +58,15 @@ const SuperAdminDashboard = () => {
     }
   };
 
+  // --- NAYA LOGIC: Users ko filter karne ke liye ---
+  const filteredUsers = selectedOrgId
+    ? users.filter((u) => u.organizationId?._id === selectedOrgId)
+    : users;
+
   const handleRemoveUser = async (id) => {
     if (!window.confirm("Remove this user?")) return;
-    setError(""); setSuccess("");
+    setError("");
+    setSuccess("");
     try {
       await api.delete("/admin/users/" + id);
       setSuccess("User removed successfully");
@@ -73,12 +79,19 @@ const SuperAdminDashboard = () => {
 
   const handleAddOrg = async (e) => {
     e.preventDefault();
-    setError(""); setSuccess("");
+    setError("");
+    setSuccess("");
     setAddLoading(true);
     try {
       await api.post("/admin/organizations", orgForm);
       setSuccess("Organization and admin account created successfully");
-      setOrgForm({ collegeName: "", emailDomain: "", adminName: "", adminEmail: "", adminPassword: "" });
+      setOrgForm({
+        collegeName: "",
+        emailDomain: "",
+        adminName: "",
+        adminEmail: "",
+        adminPassword: "",
+      });
       setShowAddOrg(false);
       fetchOrganizations();
       fetchStats();
@@ -90,8 +103,14 @@ const SuperAdminDashboard = () => {
   };
 
   const handleDeleteOrg = async (id, name) => {
-    if (!window.confirm(`Delete "${name}" and ALL its users and classrooms? This cannot be undone.`)) return;
-    setError(""); setSuccess("");
+    if (
+      !window.confirm(
+        `Delete "${name}" and ALL its users and classrooms? This cannot be undone.`
+      )
+    )
+      return;
+    setError("");
+    setSuccess("");
     try {
       await api.delete("/admin/organizations/" + id);
       setSuccess("Organization removed successfully");
@@ -186,7 +205,10 @@ const SuperAdminDashboard = () => {
               { label: "Teachers", value: stats.totalTeachers },
               { label: "Students", value: stats.totalStudents },
             ].map((s) => (
-              <div key={s.label} className="bg-white border rounded-xl p-4 text-center shadow-sm">
+              <div
+                key={s.label}
+                className="bg-white border rounded-xl p-4 text-center shadow-sm"
+              >
                 <p className="text-2xl font-bold text-[#1F4E79]">{s.value}</p>
                 <p className="text-xs text-gray-500 mt-1">{s.label}</p>
               </div>
@@ -246,65 +268,89 @@ const SuperAdminDashboard = () => {
               </div>
             </div>
 
-            {/* Add Organization Form */}
             {showAddOrg && (
               <div className="bg-white border rounded-xl p-5 mb-5 shadow-sm">
-                <h3 className="font-bold text-[#1F4E79] mb-4">Add New Organization</h3>
+                <h3 className="font-bold text-[#1F4E79] mb-4">
+                  Add New Organization
+                </h3>
                 <form onSubmit={handleAddOrg} className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs text-gray-500 font-medium mb-1 block">College Name</label>
+                      <label className="text-xs text-gray-500 font-medium mb-1 block">
+                        College Name
+                      </label>
                       <input
                         type="text"
-                        placeholder="e.g. Vishwakarma Institute of IT"
+                        placeholder="e.g. VIT"
                         value={orgForm.collegeName}
-                        onChange={(e) => setOrgForm({ ...orgForm, collegeName: e.target.value })}
+                        onChange={(e) =>
+                          setOrgForm({ ...orgForm, collegeName: e.target.value })
+                        }
                         required
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2E75B6]"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 font-medium mb-1 block">Email Domain</label>
+                      <label className="text-xs text-gray-500 font-medium mb-1 block">
+                        Email Domain
+                      </label>
                       <input
                         type="text"
-                        placeholder="e.g. viit.ac.in"
+                        placeholder="e.g. vit.edu"
                         value={orgForm.emailDomain}
-                        onChange={(e) => setOrgForm({ ...orgForm, emailDomain: e.target.value })}
+                        onChange={(e) =>
+                          setOrgForm({ ...orgForm, emailDomain: e.target.value })
+                        }
                         required
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2E75B6]"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 font-medium mb-1 block">Admin Name</label>
+                      <label className="text-xs text-gray-500 font-medium mb-1 block">
+                        Admin Name
+                      </label>
                       <input
                         type="text"
                         placeholder="Admin's full name"
                         value={orgForm.adminName}
-                        onChange={(e) => setOrgForm({ ...orgForm, adminName: e.target.value })}
+                        onChange={(e) =>
+                          setOrgForm({ ...orgForm, adminName: e.target.value })
+                        }
                         required
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2E75B6]"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 font-medium mb-1 block">Admin Email</label>
+                      <label className="text-xs text-gray-500 font-medium mb-1 block">
+                        Admin Email
+                      </label>
                       <input
                         type="email"
-                        placeholder="admin@viit.ac.in"
+                        placeholder="admin@vit.edu"
                         value={orgForm.adminEmail}
-                        onChange={(e) => setOrgForm({ ...orgForm, adminEmail: e.target.value })}
+                        onChange={(e) =>
+                          setOrgForm({ ...orgForm, adminEmail: e.target.value })
+                        }
                         required
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2E75B6]"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 font-medium mb-1 block">Admin Password</label>
+                      <label className="text-xs text-gray-500 font-medium mb-1 block">
+                        Admin Password
+                      </label>
                       <input
                         type="password"
-                        placeholder="Set a password for admin"
+                        placeholder="Set password"
                         value={orgForm.adminPassword}
-                        onChange={(e) => setOrgForm({ ...orgForm, adminPassword: e.target.value })}
+                        onChange={(e) =>
+                          setOrgForm({
+                            ...orgForm,
+                            adminPassword: e.target.value,
+                          })
+                        }
                         required
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2E75B6]"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none"
                       />
                     </div>
                   </div>
@@ -328,7 +374,6 @@ const SuperAdminDashboard = () => {
               </div>
             )}
 
-            {/* Organizations Table */}
             <div className="bg-white rounded-xl border overflow-hidden shadow-sm">
               <table className="w-full text-sm">
                 <thead className="bg-[#1F4E79] text-white">
@@ -359,7 +404,7 @@ const SuperAdminDashboard = () => {
                         <td className="px-4 py-3">
                           <button
                             onClick={() => handleDeleteOrg(org._id, org.name)}
-                            className="text-red-500 text-xs font-medium underline hover:text-red-700"
+                            className="text-red-500 text-xs font-medium underline"
                           >
                             Remove Org
                           </button>
