@@ -92,7 +92,7 @@ const Register = () => {
     { icon: "🏫", title: "Join Your Institution", desc: "Register with your college email" },
     { icon: "🎓", title: "Pick Your Role", desc: "Teacher or Student dashboard" },
     { icon: "📚", title: "Access Everything", desc: "Materials, assignments, AI chat" },
-    { icon: "🚀", title: "Start Learning", desc: "Connect and grow with ClassVerse" },
+    { icon: "🚀", title: "Start Learning", desc: "Connect and grow with SkillSeekho" },
   ];
 
   return (
@@ -157,9 +157,9 @@ const Register = () => {
           <motion.div className="flex items-center gap-3"
             initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center border border-white/20">
-              <span className="text-white font-black text-lg">C</span>
+              <span className="text-white font-black text-lg">S</span>
             </div>
-            <span className="text-white font-black text-xl tracking-tight">ClassVerse</span>
+            <span className="text-white font-black text-xl tracking-tight">SkillSeekho</span>
           </motion.div>
 
           <div className="mt-auto mb-16">
@@ -175,7 +175,7 @@ const Register = () => {
             </motion.h2>
             <motion.p className="text-white/40 text-base leading-relaxed max-w-sm mb-10"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-              Join thousands of students and teachers already using ClassVerse.
+              Join thousands of students and teachers already using SkillSeekho.
             </motion.p>
 
             <motion.div className="grid grid-cols-2 gap-3"
@@ -216,12 +216,12 @@ const Register = () => {
             <div className="w-9 h-9 rounded-xl bg-[#1F4E79] flex items-center justify-center">
               <span className="text-white font-black">C</span>
             </div>
-            <span className="text-[#1F4E79] font-black text-xl">ClassVerse</span>
+            <span className="text-[#1F4E79] font-black text-xl">SkillSeekho</span>
           </div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <h1 className="text-[#0f2d4a] text-3xl font-black tracking-tight mb-1">Create account</h1>
-            <p className="text-[#5a7a96] text-sm">Fill in your details to join ClassVerse for free</p>
+            <p className="text-[#5a7a96] text-sm">Fill in your details to join SkillSeekho for free</p>
           </motion.div>
 
           <motion.div className="h-px bg-gradient-to-r from-[#1F4E79] via-[#2E75B6] to-transparent my-6"

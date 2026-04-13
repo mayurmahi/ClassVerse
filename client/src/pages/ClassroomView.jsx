@@ -36,7 +36,7 @@ const ClassroomView = () => {
 
   const handleShareWhatsApp = () => {
     const msg = encodeURIComponent(
-      `Join my classroom "${classroom.name}" on ClassVerse!\n\nSubject: ${classroom.subject}\nJoin Code: *${classroom.joinCode}*\n\nEnter this code on ClassVerse to join.`
+      `Join my classroom "${classroom.name}" on SkillSeekho!\n\nSubject: ${classroom.subject}\nJoin Code: *${classroom.joinCode}*\n\nEnter this code on SkillSeekho to join.`
     );
     window.open(`https://wa.me/?text=${msg}`, "_blank");
     setShowShareMenu(false);
@@ -44,16 +44,16 @@ const ClassroomView = () => {
 
   const handleShareSMS = () => {
     const msg = encodeURIComponent(
-      `Join my classroom "${classroom.name}" on ClassVerse! Subject: ${classroom.subject}. Join Code: ${classroom.joinCode}`
+      `Join my classroom "${classroom.name}" on SkillSeekho! Subject: ${classroom.subject}. Join Code: ${classroom.joinCode}`
     );
     window.open(`sms:?body=${msg}`, "_blank");
     setShowShareMenu(false);
   };
 
   const handleShareEmail = () => {
-    const subject = encodeURIComponent(`Join ${classroom.name} on ClassVerse`);
+    const subject = encodeURIComponent(`Join ${classroom.name} on SkillSeekho`);
     const body = encodeURIComponent(
-      `Hi,\n\nI'd like to invite you to join my classroom on ClassVerse.\n\nClassroom: ${classroom.name}\nSubject: ${classroom.subject}\nJoin Code: ${classroom.joinCode}\n\nOpen ClassVerse and enter the code above to join.\n\nSee you there!`
+      `Hi,\n\nI'd like to invite you to join my classroom on SkillSeekho.\n\nClassroom: ${classroom.name}\nSubject: ${classroom.subject}\nJoin Code: ${classroom.joinCode}\n\nOpen SkillSeekho and enter the code above to join.\n\nSee you there!`
     );
     window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
     setShowShareMenu(false);

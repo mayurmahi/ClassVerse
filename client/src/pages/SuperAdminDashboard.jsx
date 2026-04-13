@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -19,6 +19,11 @@ const SuperAdminDashboard = () => {
     adminPassword: "",
   });
   const [addLoading, setAddLoading] = useState(false);
+
+  // Search & filter state
+  const [orgSearch, setOrgSearch] = useState("");
+  const [userSearch, setUserSearch] = useState("");
+  const [selectedOrg, setSelectedOrg] = useState(""); // for filtering users by org
 
   useEffect(() => {
     fetchStats();
@@ -98,12 +103,56 @@ const SuperAdminDashboard = () => {
     }
   };
 
+  // Filtered & sorted organizations
+  const filteredOrganizations = useMemo(() => {
+    const q = orgSearch.toLowerCase();
+    return organizations.filter(
+      (org) =>
+        org.name?.toLowerCase().includes(q) ||
+        org.emailDomain?.toLowerCase().includes(q) ||
+        org.adminId?.name?.toLowerCase().includes(q)
+    );
+  }, [organizations, orgSearch]);
+
+  // Filtered & sorted users — sorted by organization name, then filtered by search + org dropdown
+  const filteredUsers = useMemo(() => {
+    const q = userSearch.toLowerCase();
+    return users
+      .filter((u) => {
+        const matchesSearch =
+          u.name?.toLowerCase().includes(q) ||
+          u.email?.toLowerCase().includes(q) ||
+          u.role?.toLowerCase().includes(q) ||
+          u.organizationId?.name?.toLowerCase().includes(q);
+        const matchesOrg = selectedOrg
+          ? u.organizationId?._id === selectedOrg || u.organizationId?.name === selectedOrg
+          : true;
+        return matchesSearch && matchesOrg;
+      })
+      .sort((a, b) => {
+        const orgA = a.organizationId?.name || "zzz"; // push no-org users to bottom
+        const orgB = b.organizationId?.name || "zzz";
+        return orgA.localeCompare(orgB);
+      });
+  }, [users, userSearch, selectedOrg]);
+
+  // Unique orgs from users list for the filter dropdown
+  const orgOptions = useMemo(() => {
+    const seen = new Map();
+    users.forEach((u) => {
+      if (u.organizationId?._id && !seen.has(u.organizationId._id)) {
+        seen.set(u.organizationId._id, u.organizationId.name);
+      }
+    });
+    return Array.from(seen.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+  }, [users]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navbar */}
       <div className="bg-white border-b px-6 py-4 flex justify-between items-center">
         <div>
-          <h1 className="text-xl font-bold text-[#1F4E79]">ClassVerse</h1>
+          <h1 className="text-xl font-bold text-[#1F4E79]">SkillSeekho</h1>
           <p className="text-xs text-gray-400">Super Admin Panel</p>
         </div>
         <button
@@ -115,8 +164,16 @@ const SuperAdminDashboard = () => {
       </div>
 
       <div className="p-6">
-        {error && <p className="text-red-500 text-sm mb-3 bg-red-50 border border-red-200 px-4 py-2 rounded-lg">{error}</p>}
-        {success && <p className="text-green-600 text-sm mb-3 bg-green-50 border border-green-200 px-4 py-2 rounded-lg">{success}</p>}
+        {error && (
+          <p className="text-red-500 text-sm mb-3 bg-red-50 border border-red-200 px-4 py-2 rounded-lg">
+            {error}
+          </p>
+        )}
+        {success && (
+          <p className="text-green-600 text-sm mb-3 bg-green-50 border border-green-200 px-4 py-2 rounded-lg">
+            {success}
+          </p>
+        )}
 
         {/* Stats */}
         {stats && (
@@ -154,18 +211,39 @@ const SuperAdminDashboard = () => {
           ))}
         </div>
 
-        {/* Organizations Tab */}
+        {/* ── Organizations Tab ── */}
         {activeTab === "organizations" && (
           <div>
-            {/* Add Organization Button */}
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
               <h2 className="font-bold text-[#1F4E79]">Registered Organizations</h2>
-              <button
-                onClick={() => setShowAddOrg(!showAddOrg)}
-                className="bg-[#1F4E79] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#2E75B6]"
-              >
-                + Add Organization
-              </button>
+
+              <div className="flex gap-2 w-full sm:w-auto">
+                {/* Search bar */}
+                <div className="relative flex-1 sm:w-64">
+                  <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                    width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search organizations…"
+                    value={orgSearch}
+                    onChange={(e) => setOrgSearch(e.target.value)}
+                    className="w-full border rounded-lg pl-8 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2E75B6]"
+                  />
+                </div>
+
+                <button
+                  onClick={() => setShowAddOrg(!showAddOrg)}
+                  className="bg-[#1F4E79] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#2E75B6] whitespace-nowrap"
+                >
+                  + Add Organization
+                </button>
+              </div>
             </div>
 
             {/* Add Organization Form */}
@@ -263,14 +341,14 @@ const SuperAdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {organizations.length === 0 ? (
+                  {filteredOrganizations.length === 0 ? (
                     <tr>
                       <td colSpan="5" className="px-4 py-8 text-center text-gray-400">
-                        No organizations yet. Add one above.
+                        {orgSearch ? "No organizations match your search." : "No organizations yet. Add one above."}
                       </td>
                     </tr>
                   ) : (
-                    organizations.map((org, i) => (
+                    filteredOrganizations.map((org, i) => (
                       <tr key={org._id} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                         <td className="px-4 py-3 font-medium">{org.name}</td>
                         <td className="px-4 py-3 text-gray-500">@{org.emailDomain}</td>
@@ -295,54 +373,111 @@ const SuperAdminDashboard = () => {
           </div>
         )}
 
-        {/* Users Tab */}
+        {/* ── Users Tab ── */}
         {activeTab === "users" && (
           <div className="bg-white rounded-xl border overflow-hidden shadow-sm">
-            <div className="px-5 py-4 border-b">
-              <h2 className="font-bold text-[#1F4E79]">All Users</h2>
+            <div className="px-5 py-4 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div>
+                <h2 className="font-bold text-[#1F4E79]">All Users</h2>
+                <p className="text-xs text-gray-400 mt-0.5">Sorted by organization</p>
+              </div>
+
+              <div className="flex gap-2 w-full sm:w-auto">
+                {/* Search bar */}
+                <div className="relative flex-1 sm:w-56">
+                  <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                    width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search users…"
+                    value={userSearch}
+                    onChange={(e) => setUserSearch(e.target.value)}
+                    className="w-full border rounded-lg pl-8 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2E75B6]"
+                  />
+                </div>
+
+                {/* Filter by org dropdown */}
+                <select
+                  value={selectedOrg}
+                  onChange={(e) => setSelectedOrg(e.target.value)}
+                  className="border rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2E75B6] bg-white"
+                >
+                  <option value="">All Organizations</option>
+                  {orgOptions.map(([id, name]) => (
+                    <option key={id} value={id}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
+
             <table className="w-full text-sm">
               <thead className="bg-[#1F4E79] text-white">
                 <tr>
                   <th className="px-4 py-3 text-left">Name</th>
                   <th className="px-4 py-3 text-left">Email</th>
                   <th className="px-4 py-3 text-left">Role</th>
-                  <th className="px-4 py-3 text-left">Organization</th>
+                  <th className="px-4 py-3 text-left">Organization ↑</th>
                   <th className="px-4 py-3 text-left">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {users.map((u, i) => (
-                  <tr key={u._id} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                    <td className="px-4 py-3">{u.name}</td>
-                    <td className="px-4 py-3">{u.email}</td>
-                    <td className="px-4 py-3">
-                      <span className={`text-xs font-bold px-2 py-1 rounded-full ${
-                        u.role === "SuperAdmin" ? "bg-purple-100 text-purple-700"
-                        : u.role === "Admin" ? "bg-blue-100 text-blue-700"
-                        : u.role === "Teacher" ? "bg-green-100 text-green-700"
-                        : "bg-orange-100 text-orange-700"
-                      }`}>
-                        {u.role}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-500">
-                      {u.organizationId?.name || "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      {u.role !== "SuperAdmin" && (
-                        <button
-                          onClick={() => handleRemoveUser(u._id)}
-                          className="text-red-500 text-xs underline hover:text-red-700"
-                        >
-                          Remove
-                        </button>
-                      )}
+                {filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="px-4 py-8 text-center text-gray-400">
+                      No users match your search or filter.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredUsers.map((u, i) => (
+                    <tr key={u._id} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                      <td className="px-4 py-3">{u.name}</td>
+                      <td className="px-4 py-3">{u.email}</td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`text-xs font-bold px-2 py-1 rounded-full ${
+                            u.role === "SuperAdmin"
+                              ? "bg-purple-100 text-purple-700"
+                              : u.role === "Admin"
+                              ? "bg-blue-100 text-blue-700"
+                              : u.role === "Teacher"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-orange-100 text-orange-700"
+                          }`}
+                        >
+                          {u.role}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-gray-500">
+                        {u.organizationId?.name || "—"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {u.role !== "SuperAdmin" && (
+                          <button
+                            onClick={() => handleRemoveUser(u._id)}
+                            className="text-red-500 text-xs underline hover:text-red-700"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
+
+            {/* Footer count */}
+            <div className="px-5 py-3 border-t bg-gray-50 text-xs text-gray-400">
+              Showing {filteredUsers.length} of {users.length} users
+            </div>
           </div>
         )}
       </div>

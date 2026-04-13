@@ -1,7 +1,7 @@
 const Material = require("../models/Material");
 const { cloudinary } = require("../config/cloudinary");
 
-// ── POST /api/materials/upload — Teacher uploads material ─────────────────────
+// ── POST /api/materials/upload ────────────────────────────────────────────────
 const uploadMaterial = async (req, res) => {
   try {
     if (req.user.role !== "Teacher") {
@@ -18,22 +18,27 @@ const uploadMaterial = async (req, res) => {
       return res.status(400).json({ message: "classroomId and title are required" });
     }
 
+    // ── Block if same title already exists in this classroom ─────────────────
+    const existing = await Material.findOne({ classroomId, title: title.trim() });
+    if (existing) {
+      return res.status(400).json({
+        message: `"${title.trim()}" already exists in this classroom. Please use a different title.`,
+      });
+    }
+
     const ext = req.file.originalname.split(".").pop().toLowerCase();
     const fileTypeMap = { pdf: "pdf", ppt: "ppt", pptx: "pptx", doc: "doc", docx: "docx" };
     const fileType = fileTypeMap[ext] || ext;
-
-    // FIX: Cloudinary returns resource_type on req.file — store it so we can
-    // use the correct type when deleting. Falls back to "raw" for docs/PDFs.
     const resourceType = req.file.resource_type || "raw";
 
     const material = new Material({
       classroomId,
-      title,
-      description: description || "",
-      filePath:     req.file.filename,   // Cloudinary public_id — for deletion
-      fileType, 
-      fileUrl:      req.file.path,       // Cloudinary CDN URL   — for reads
-      resourceType,                      // FIX: persisted so delete uses right type
+      title:        title.trim(),
+      description:  description || "",
+      filePath:     req.file.filename,
+      fileType,
+      fileUrl:      req.file.path,
+      resourceType,
       uploadedBy:   req.user.id,
     });
 
@@ -71,8 +76,6 @@ const deleteMaterial = async (req, res) => {
       return res.status(403).json({ message: "Not authorized to delete this material" });
     }
 
-    // FIX: use the stored resourceType instead of hardcoding "raw".
-    // Hardcoding "raw" silently fails for images uploaded with resource_type "image".
     const resourceType = material.resourceType || "raw";
     await cloudinary.uploader.destroy(material.filePath, { resource_type: resourceType });
 
