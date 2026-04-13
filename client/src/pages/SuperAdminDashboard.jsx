@@ -58,11 +58,6 @@ const SuperAdminDashboard = () => {
     }
   };
 
-  // --- NAYA LOGIC: Users ko filter karne ke liye ---
-  const filteredUsers = selectedOrgId
-    ? users.filter((u) => u.organizationId?._id === selectedOrgId)
-    : users;
-
   const handleRemoveUser = async (id) => {
     if (!window.confirm("Remove this user?")) return;
     setError("");
