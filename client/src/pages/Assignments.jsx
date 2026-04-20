@@ -40,7 +40,7 @@ const GradeBadge = ({ grade }) => {
 // If the backend now stores fileUrl (Cloudinary), prefer that.
 // Fall back to the old localhost path for any pre-migration records.
 const resolveUrl = (fileUrl, legacyPath) =>
-  fileUrl || `http://localhost:5000/uploads/${legacyPath}`;
+  fileUrl || `${import.meta.env.VITE_API_URL}/uploads/${legacyPath}`;
 
 // ── Main Component ────────────────────────────────────────────────────────────
 const Assignments = ({ classroomId }) => {
