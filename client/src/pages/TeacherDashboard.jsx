@@ -233,7 +233,7 @@ const TeacherDashboard = () => {
             </div>
             <div>
               <h1 className="text-white text-xl font-bold tracking-tight">Teacher Dashboard</h1>
-              <p className="text-blue-200 text-xs">SkillSeekho · Manage Your Classrooms</p>
+              <p className="text-blue-200 text-xs">OptimalPadho · Manage Your Classrooms</p>
             </div>
           </div>
           <button

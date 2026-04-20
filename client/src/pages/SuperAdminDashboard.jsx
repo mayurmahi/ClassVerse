@@ -166,7 +166,7 @@ const SuperAdminDashboard = () => {
       {/* Navbar */}
       <div className="bg-white border-b px-6 py-4 flex justify-between items-center">
         <div>
-          <h1 className="text-xl font-bold text-[#1F4E79]">SkillSeekho</h1>
+          <h1 className="text-xl font-bold text-[#1F4E79]">OptimalPadho</h1>
           <p className="text-xs text-gray-400">Super Admin Panel</p>
         </div>
         <button
