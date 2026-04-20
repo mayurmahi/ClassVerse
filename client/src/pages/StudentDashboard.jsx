@@ -182,7 +182,7 @@ const StudentDashboard = () => {
             </div>
             <div>
               <h1 className="text-white text-xl font-bold tracking-tight">Student Dashboard</h1>
-              <p className="text-blue-200 text-xs">SkillSeekho · Your Learning Hub</p>
+              <p className="text-blue-200 text-xs">OptimalPadho · Your Learning Hub</p>
             </div>
           </div>
           <span className="bg-white/10 text-white text-xs font-semibold px-3 py-1.5 rounded-full border border-white/20">

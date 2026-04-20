@@ -189,13 +189,13 @@ const Login = () => {
           {/* Logo */}
           <motion.div className="flex items-center gap-3" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center border border-white/20">
-              <span className="text-white font-black text-lg">C</span>
+              <span className="text-white font-black text-lg">OP</span>
             </div>
-            <span className="text-white font-black text-xl tracking-tight">SkillSeekho</span>
+            <span className="text-white font-black text-xl tracking-tight">OptimalPadho</span>
           </motion.div>
 
           {/* Headline */}
-          <div className="mt-auto mb-20">
+          <div className="mt-auto mb-20"> 
             <motion.p className="text-blue-200 text-sm font-semibold tracking-widest uppercase mb-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
               The Future of Learning
             </motion.p>
@@ -245,9 +245,9 @@ const Login = () => {
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center gap-2 mb-8">
             <div className="w-9 h-9 rounded-xl bg-[#1F4E79] flex items-center justify-center">
-              <span className="text-white font-black">S</span>
+              <span className="text-white font-black">OP</span>
             </div>
-            <span className="text-[#1F4E79] font-black text-xl">SkillSeekho</span>
+            <span className="text-[#1F4E79] font-black text-xl">OptimalPadho</span>
           </div>
 
           {/* Header */}
@@ -256,7 +256,7 @@ const Login = () => {
               Welcome back
             </h1>
             <p className="text-[#5a7a96] text-sm">
-              Sign in to access your SkillSeekho dashboard
+              Sign in to access your OptimalPadho dashboard
             </p>
           </motion.div>
 
@@ -389,7 +389,7 @@ const Login = () => {
             {/* Register link */}
             <motion.p className="text-center text-sm text-[#5a7a96]"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
-              New to SkillSeekho?{" "}
+              New to OptimalPadho?{" "}
               <Link to="/register"
                 className="text-[#1F4E79] font-bold hover:text-[#2E75B6] transition-colors underline underline-offset-2">
                 Create account
@@ -400,7 +400,7 @@ const Login = () => {
           {/* Footer */}
           <motion.p className="text-center text-xs text-[#a0b4c4] mt-10"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
-            © 2025 SkillSeekho · Secure E-Learning Platform
+            © 2025 OptimalPadho · Secure E-Learning Platform
           </motion.p>
         </motion.div>
       </div>
